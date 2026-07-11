@@ -2141,7 +2141,18 @@ function initializeDashboardState() {
   elements.currentUserLabel.textContent = 'مرحبًا';
 }
 
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) {
+    return;
+  }
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(() => {});
+  });
+}
+
 async function bootstrap() {
+  registerServiceWorker();
   bindEvents();
   initializeDashboardState();
   await loadAuthStatus();
