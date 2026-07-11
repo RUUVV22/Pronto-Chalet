@@ -35,8 +35,8 @@
 
             <form id="setupForm" class="auth-form" novalidate>
               <label>
-                اسم المستخدم
-                <input id="setupUsername" type="text" autocomplete="username" required />
+                البريد الإلكتروني
+                <input id="setupUsername" type="email" autocomplete="email" required />
               </label>
 
               <label>
@@ -61,13 +61,13 @@
                 <p class="eyebrow">تسجيل الدخول</p>
                 <h2>الدخول إلى لوحة التحكم</h2>
               </div>
-              <p class="panel-note">استخدم اسم المستخدم وكلمة المرور الخاصة بك فقط.</p>
+              <p class="panel-note">استخدم البريد الإلكتروني وكلمة المرور الخاصة بك فقط.</p>
             </div>
 
             <form id="loginForm" class="auth-form" novalidate>
               <label>
-                اسم المستخدم
-                <input id="loginUsername" type="text" autocomplete="username" required />
+                البريد الإلكتروني
+                <input id="loginUsername" type="email" autocomplete="email" required />
               </label>
 
               <label>
@@ -195,6 +195,20 @@
 
               <div class="form-row">
                 <label>
+                  قيمة الحجز
+                  <input
+                    id="bookingPrice"
+                    name="bookingPrice"
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="أدخل قيمة الحجز"
+                    required
+                  />
+                </label>
+
+                <label>
                   الرعبون
                   <input
                     id="depositAmount"
@@ -208,10 +222,11 @@
                   />
                 </label>
 
-                <div class="price-summary" aria-live="polite">
-                  <span>قيمة الحجز: <strong id="bookingPriceLabel">١٤٠ دينار</strong></span>
-                  <span>القيمة المتبقية: <strong id="remainingAmountLabel">١٤٠ دينار</strong></span>
-                </div>
+              </div>
+
+              <div class="price-summary" aria-live="polite">
+                <span>قيمة الحجز: <strong id="bookingPriceLabel">٠ دينار</strong></span>
+                <span>القيمة المتبقية: <strong id="remainingAmountLabel">٠ دينار</strong></span>
               </div>
 
               <label>
@@ -320,8 +335,8 @@
 
               <form id="createAccountForm" class="auth-form" novalidate>
                 <label>
-                  اسم المستخدم
-                  <input id="createUsername" type="text" autocomplete="username" required />
+                  البريد الإلكتروني
+                  <input id="createUsername" type="email" autocomplete="email" required />
                 </label>
 
                 <label>
@@ -407,6 +422,6 @@
       </section>
     </div>
 
-    <script src="js/app.js?v=booking-slots-11" defer></script>
+    <script type="module" src="js/app.js?v=firebase-1"></script>
   </body>
 </html>

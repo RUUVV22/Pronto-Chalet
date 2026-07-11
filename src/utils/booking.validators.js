@@ -2,7 +2,6 @@ const { ValidationError } = require('./app-error');
 const {
   BOOKING_PERIOD_VALUES,
   BOOKING_TYPE_VALUES,
-  getBookingPeriodPrice,
 } = require('./booking.constants');
 const {
   getTodayDateString,
@@ -76,6 +75,7 @@ function validateBookingPayload(payload) {
   const bookingType = normalizeBookingTypeField(
     payload.bookingType ?? payload.purpose ?? payload.type
   );
+  const bookingPrice = normalizeAmountField(payload.bookingPrice ?? payload.price, null);
   const depositAmount = normalizeAmountField(
     payload.depositAmount ?? payload.raboon ?? payload.deposit,
     0
@@ -107,6 +107,10 @@ function validateBookingPayload(payload) {
     errors.bookingType = 'يجب اختيار نوع الحجز.';
   }
 
+  if (bookingPrice === null) {
+    errors.bookingPrice = 'يجب إدخال قيمة الحجز كرقم صحيح أكبر من أو يساوي صفرًا.';
+  }
+
   if (depositAmount === null) {
     errors.depositAmount = 'يجب أن يكون الرعبون رقمًا صحيحًا أكبر من أو يساوي صفرًا.';
   }
@@ -122,9 +126,7 @@ function validateBookingPayload(payload) {
     errors.bookingDate = 'لا يمكن الحجز لتواريخ سابقة.';
   }
 
-  const bookingPrice = bookingPeriod ? getBookingPeriodPrice(bookingPeriod) : getBookingPeriodPrice('morning');
-
-  if (depositAmount !== null && depositAmount > bookingPrice) {
+  if (bookingPrice !== null && depositAmount !== null && depositAmount > bookingPrice) {
     errors.depositAmount = 'الرعبون لا يمكن أن يتجاوز قيمة الحجز.';
   }
 

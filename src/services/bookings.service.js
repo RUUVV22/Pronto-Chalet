@@ -2,7 +2,6 @@ const { ConflictError, NotFoundError } = require('../utils/app-error');
 const {
   BOOKING_PERIOD_ORDER,
   BOOKING_TYPE_VALUES,
-  getBookingPeriodPrice,
 } = require('../utils/booking.constants');
 const { compareDateStrings, isActiveBookingStatus } = require('../utils/date.utils');
 const { generateBookingId } = require('../utils/id.utils');
@@ -23,7 +22,7 @@ function normalizeBookingRecord(booking) {
     : 'normal';
   const bookingPrice = Number.isInteger(booking.bookingPrice) && booking.bookingPrice >= 0
     ? booking.bookingPrice
-    : getBookingPeriodPrice(bookingPeriod);
+    : 0;
   const depositAmount = Number.isInteger(booking.depositAmount) && booking.depositAmount >= 0
     ? booking.depositAmount
     : 0;

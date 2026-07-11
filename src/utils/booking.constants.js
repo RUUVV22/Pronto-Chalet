@@ -1,11 +1,9 @@
 const BOOKING_PERIODS = {
   morning: {
     label: 'حجز صباحي',
-    price: 140,
   },
   evening: {
     label: 'حجز مسائي',
-    price: 120,
   },
 };
 
@@ -25,10 +23,6 @@ function getBookingPeriodLabel(period) {
   return BOOKING_PERIODS[period]?.label || BOOKING_PERIODS.morning.label;
 }
 
-function getBookingPeriodPrice(period) {
-  return BOOKING_PERIODS[period]?.price ?? BOOKING_PERIODS.morning.price;
-}
-
 function getBookingTypeLabel(type) {
   return BOOKING_TYPES[type] || BOOKING_TYPES.normal;
 }
@@ -36,7 +30,6 @@ function getBookingTypeLabel(type) {
 function getBookingPeriodOptions() {
   return Object.entries(BOOKING_PERIODS).map(([value, meta]) => ({
     label: meta.label,
-    price: meta.price,
     value,
   }));
 }
@@ -56,7 +49,6 @@ module.exports = {
   BOOKING_TYPES,
   getBookingPeriodLabel,
   getBookingPeriodOptions,
-  getBookingPeriodPrice,
   getBookingTypeLabel,
   getBookingTypeOptions,
 };

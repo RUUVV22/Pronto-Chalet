@@ -6,7 +6,12 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "firebase:login": "npx firebase-tools login",
+    "firebase:deploy": "npx firebase-tools deploy",
+    "firebase:deploy:hosting": "npx firebase-tools deploy --only hosting",
+    "firebase:deploy:rules": "npx firebase-tools deploy --only firestore:rules",
+    "firebase:migrate-bookings": "node work/migrate-bookings-to-firestore.mjs"
   },
   "dependencies": {
     "express": "^4.21.2"

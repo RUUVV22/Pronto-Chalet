@@ -1,9 +1,51 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js';
+import {
+  EmailAuthProvider,
+  createUserWithEmailAndPassword,
+  getAuth,
+  onAuthStateChanged,
+  reauthenticateWithCredential,
+  signInWithEmailAndPassword,
+  signOut,
+  updatePassword,
+} from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from 'https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js';
+
 const API_BASE = '/api/bookings';
 const AUTH_BASE = '/api/auth';
 const STATIC_STORAGE_KEY = 'pronto-chalet-static-store-v1';
 const STATIC_SESSION_KEY = 'pronto-chalet-static-session-v1';
 const ARABIC_LOCALE = 'ar-SA-u-ca-gregory';
 const PHONE_NUMBER_MAX_LENGTH = 10;
+const BOOKINGS_COLLECTION = 'bookings';
+const ADMINS_COLLECTION = 'admins';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyDjmBwQn2i5S94g7lB5guDAfH9Wn8AhDlo',
+  authDomain: 'prontochalet-f75b6.firebaseapp.com',
+  projectId: 'prontochalet-f75b6',
+  storageBucket: 'prontochalet-f75b6.firebasestorage.app',
+  messagingSenderId: '107619810614',
+  appId: '1:107619810614:web:b3b1dad78a0a8c08054797',
+  measurementId: 'G-ZERN51SPDY',
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const secondaryFirebaseApp = initializeApp(firebaseConfig, 'secondary-admin-creation');
+const firebaseAuth = getAuth(firebaseApp);
+const secondaryFirebaseAuth = getAuth(secondaryFirebaseApp);
+const firestoreDb = getFirestore(firebaseApp);
 
 const receiptInsuranceAmount = 30;
 const receiptCleaningDeduction = 20;
@@ -37,19 +79,28 @@ const bookingPeriodLabels = {
   evening: 'حجز مسائي',
 };
 
-const bookingPeriodPrices = {
-  morning: 140,
-  evening: 120,
-};
+const bookingPeriodValues = new Set(Object.keys(bookingPeriodLabels));
 
 const bookingPeriodTimes = {
-  morning: {
-    from: '10:00 صباحًا',
-    to: '8:00 مساءً',
+  normal: {
+    morning: {
+      from: '10:00 صباحًا',
+      to: '8:00 مساءً',
+    },
+    evening: {
+      from: '10:00 مساءً',
+      to: '8:00 صباحًا',
+    },
   },
-  evening: {
-    from: '8:00 مساءً',
-    to: '2:00 صباحًا',
+  party: {
+    morning: {
+      from: '10:00 صباحًا',
+      to: '6:00 مساءً',
+    },
+    evening: {
+      from: '10:00 مساءً',
+      to: '6:00 صباحًا',
+    },
   },
 };
 
@@ -99,6 +150,7 @@ const elements = {
   bookingDate: document.getElementById('bookingDate'),
   bookingPeriodRadios: document.querySelectorAll('input[name="bookingPeriod"]'),
   bookingType: document.getElementById('bookingType'),
+  bookingPrice: document.getElementById('bookingPrice'),
   depositAmount: document.getElementById('depositAmount'),
   bookingPriceLabel: document.getElementById('bookingPriceLabel'),
   remainingAmountLabel: document.getElementById('remainingAmountLabel'),
@@ -224,8 +276,16 @@ function getBookingPeriodLabel(period) {
   return bookingPeriodLabels[period] || bookingPeriodLabels.morning;
 }
 
+function isValidBookingPeriod(period) {
+  return bookingPeriodValues.has(period);
+}
+
 function getBookingTypeLabel(type) {
   return bookingTypeLabels[type] || bookingTypeLabels.normal;
+}
+
+function isPartyBookingType(type) {
+  return type !== 'normal' && Boolean(bookingTypeLabels[type]);
 }
 
 function getBookingDate(booking) {
@@ -238,9 +298,7 @@ function getBookingPeriod(booking) {
 
 function getBookingPrice(booking) {
   const price = Number(booking.bookingPrice);
-  return Number.isInteger(price) && price >= 0
-    ? price
-    : bookingPeriodPrices[getBookingPeriod(booking)];
+  return Number.isInteger(price) && price >= 0 ? price : 0;
 }
 
 function getDepositAmount(booking) {
@@ -283,7 +341,12 @@ function formatReceiptWeekday(dateString) {
 }
 
 function getReceiptTimes(booking) {
-  return bookingPeriodTimes[getBookingPeriod(booking)] || bookingPeriodTimes.morning;
+  const period = getBookingPeriod(booking);
+  const timesByType = isPartyBookingType(booking.bookingType)
+    ? bookingPeriodTimes.party
+    : bookingPeriodTimes.normal;
+
+  return timesByType[period] || bookingPeriodTimes.normal.morning;
 }
 
 function buildReceiptLines(booking) {
@@ -884,7 +947,6 @@ function renderSelectedDateDetails() {
     .map((period) => {
       const booking = bookings.find((item) => getBookingPeriod(item) === period);
       const periodLabel = getBookingPeriodLabel(period);
-      const defaultPrice = bookingPeriodPrices[period];
 
       if (!booking) {
         return `
@@ -893,7 +955,6 @@ function renderSelectedDateDetails() {
               <strong>${periodLabel}</strong>
               <span>متاح للحجز</span>
             </div>
-            <span class="slot-price">${formatCurrency(defaultPrice)}</span>
           </article>
         `;
       }
@@ -1060,6 +1121,11 @@ function getDepositInputValue() {
   return Number.isFinite(deposit) && deposit >= 0 ? deposit : 0;
 }
 
+function getBookingPriceInputValue() {
+  const bookingPrice = Number(elements.bookingPrice.value || 0);
+  return Number.isFinite(bookingPrice) && bookingPrice >= 0 ? bookingPrice : 0;
+}
+
 function normalizePhoneNumberInput(value) {
   return String(value || '')
     .replace(/\D/g, '')
@@ -1071,8 +1137,7 @@ function handlePhoneNumberInput(event) {
 }
 
 function updatePriceSummary() {
-  const bookingPeriod = getSelectedBookingPeriod();
-  const bookingPrice = bookingPeriodPrices[bookingPeriod] || bookingPeriodPrices.morning;
+  const bookingPrice = getBookingPriceInputValue();
   const deposit = getDepositInputValue();
 
   elements.depositAmount.max = String(bookingPrice);
@@ -1086,6 +1151,7 @@ function resetBookingForm() {
   elements.bookingForm.reset();
   elements.status.value = 'pending';
   elements.bookingType.value = 'normal';
+  elements.bookingPrice.value = '';
   elements.depositAmount.value = '0';
   setSelectedBookingPeriod('morning');
   elements.formHeading.textContent = 'إضافة حجز';
@@ -1103,6 +1169,7 @@ function fillBookingForm(booking) {
   elements.phoneNumber.value = normalizePhoneNumberInput(booking.phoneNumber);
   elements.bookingDate.value = getBookingDate(booking);
   elements.bookingType.value = booking.bookingType || 'normal';
+  elements.bookingPrice.value = String(getBookingPrice(booking));
   elements.depositAmount.value = String(getDepositAmount(booking));
   elements.notes.value = booking.notes || '';
   elements.status.value = booking.status;
@@ -1154,6 +1221,370 @@ function processApiError(error) {
   if (error.status === 401 && state.authenticated) {
     handleSessionExpired(error.message);
   }
+}
+
+function getFirebaseAuthState() {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      firebaseAuth,
+      (user) => {
+        unsubscribe();
+        resolve(user);
+      },
+      (error) => {
+        unsubscribe();
+        reject(error);
+      }
+    );
+  });
+}
+
+function toIsoDateTime(value) {
+  if (!value) {
+    return '';
+  }
+
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (typeof value.toDate === 'function') {
+    return value.toDate().toISOString();
+  }
+
+  return String(value);
+}
+
+function toPublicFirebaseUser(user, adminRecord = {}) {
+  return {
+    id: user.uid,
+    username: adminRecord.email || user.email || 'admin',
+    email: user.email || adminRecord.email || '',
+    role: adminRecord.role || 'admin',
+    createdAt: user.metadata?.creationTime || '',
+    updatedAt: user.metadata?.lastSignInTime || '',
+  };
+}
+
+function normalizeFirebaseBooking(documentId, data) {
+  const booking = {
+    id: documentId,
+    ...data,
+    createdAt: toIsoDateTime(data.createdAt),
+    updatedAt: toIsoDateTime(data.updatedAt),
+  };
+  const bookingPrice = getBookingPrice(booking);
+  const depositAmount = getDepositAmount(booking);
+
+  return {
+    ...booking,
+    bookingDate: getBookingDate(booking),
+    bookingPeriod: getBookingPeriod(booking),
+    bookingPrice,
+    bookingType: bookingTypeLabels[booking.bookingType] ? booking.bookingType : 'normal',
+    depositAmount,
+    guestName: normalizeStaticText(booking.guestName),
+    notes: normalizeStaticText(booking.notes),
+    phoneNumber: normalizeStaticText(booking.phoneNumber),
+    remainingAmount: Number.isInteger(Number(booking.remainingAmount))
+      ? Number(booking.remainingAmount)
+      : Math.max(bookingPrice - depositAmount, 0),
+    status: ['confirmed', 'pending', 'cancelled'].includes(booking.status)
+      ? booking.status
+      : 'pending',
+  };
+}
+
+function getFirebaseErrorMessage(error) {
+  const code = String(error && error.code ? error.code : '');
+
+  if (code.includes('auth/invalid-email')) {
+    return 'البريد الإلكتروني غير صالح.';
+  }
+
+  if (
+    code.includes('auth/invalid-credential') ||
+    code.includes('auth/user-not-found') ||
+    code.includes('auth/wrong-password')
+  ) {
+    return 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+  }
+
+  if (code.includes('auth/email-already-in-use')) {
+    return 'هذا البريد الإلكتروني مستخدم بالفعل.';
+  }
+
+  if (code.includes('auth/weak-password')) {
+    return 'كلمة المرور ضعيفة. استخدم 8 أحرف على الأقل.';
+  }
+
+  if (code.includes('auth/requires-recent-login')) {
+    return 'سجّل الدخول مرة أخرى قبل تغيير كلمة المرور.';
+  }
+
+  if (code.includes('permission-denied')) {
+    return 'هذا الحساب غير مصرح له باستخدام لوحة التحكم.';
+  }
+
+  if (code.includes('unavailable')) {
+    return 'تعذر الاتصال بـ Firebase حاليًا. حاول مرة أخرى.';
+  }
+
+  return error.message || 'حدث خطأ غير متوقع في Firebase.';
+}
+
+function toFirebaseApiError(error, fallbackMessage = 'حدث خطأ غير متوقع في Firebase.') {
+  if (error && error.status && error.data) {
+    return error;
+  }
+
+  const status = String(error && error.code ? error.code : '').includes('permission-denied')
+    ? 403
+    : 400;
+
+  return createApiError(getFirebaseErrorMessage(error) || fallbackMessage, status);
+}
+
+async function getFirebaseAdminRecord(user) {
+  let adminSnapshot;
+
+  try {
+    adminSnapshot = await getDoc(doc(firestoreDb, ADMINS_COLLECTION, user.uid));
+  } catch (error) {
+    if (String(error && error.code ? error.code : '').includes('permission-denied')) {
+      throw createApiError(
+        `هذا الحساب غير مصرح له باستخدام لوحة التحكم. انشر قواعد Firestore ثم تأكد من وجود المستند admins/${user.uid}.`,
+        403,
+        { email: user.email || '', uid: user.uid }
+      );
+    }
+
+    throw error;
+  }
+
+  if (!adminSnapshot.exists()) {
+    throw createApiError(
+      `هذا الحساب غير مصرح له باستخدام لوحة التحكم. أضف مستند Firestore باسم admins/${user.uid}.`,
+      403,
+      { email: user.email || '', uid: user.uid }
+    );
+  }
+
+  return adminSnapshot.data() || {};
+}
+
+async function requireFirebaseAdmin() {
+  const user = firebaseAuth.currentUser || (await getFirebaseAuthState());
+
+  if (!user) {
+    throw createApiError('يجب تسجيل الدخول أولًا.', 401);
+  }
+
+  const adminRecord = await getFirebaseAdminRecord(user);
+  return { user, adminRecord };
+}
+
+async function readFirebaseBookings() {
+  const bookingsSnapshot = await getDocs(collection(firestoreDb, BOOKINGS_COLLECTION));
+  return bookingsSnapshot.docs.map((bookingDocument) =>
+    normalizeFirebaseBooking(bookingDocument.id, bookingDocument.data())
+  );
+}
+
+async function assertFirebaseBookingDoesNotOverlap(candidateBooking, currentBookingId = null) {
+  const bookings = await readFirebaseBookings();
+  assertStaticBookingDoesNotOverlap(bookings, candidateBooking, currentBookingId);
+}
+
+function getFirebaseBookingWritePayload(payload) {
+  return {
+    bookingDate: payload.bookingDate,
+    bookingPeriod: payload.bookingPeriod,
+    bookingPrice: payload.bookingPrice,
+    bookingType: payload.bookingType,
+    depositAmount: payload.depositAmount,
+    guestName: payload.guestName,
+    notes: payload.notes,
+    phoneNumber: payload.phoneNumber,
+    remainingAmount: payload.remainingAmount,
+    status: payload.status,
+    updatedAt: serverTimestamp(),
+  };
+}
+
+async function createFirebaseAdminAccount(payload, creator) {
+  try {
+    const createdCredential = await createUserWithEmailAndPassword(
+      secondaryFirebaseAuth,
+      payload.username,
+      payload.password
+    );
+    const createdUser = createdCredential.user;
+    const adminRecord = {
+      createdAt: serverTimestamp(),
+      createdBy: creator.uid,
+      email: payload.username,
+      role: 'admin',
+    };
+
+    await setDoc(doc(firestoreDb, ADMINS_COLLECTION, createdUser.uid), adminRecord);
+
+    return toPublicFirebaseUser(createdUser, { ...adminRecord, email: payload.username });
+  } finally {
+    if (secondaryFirebaseAuth.currentUser) {
+      await signOut(secondaryFirebaseAuth);
+    }
+  }
+}
+
+async function firebaseApiRequest(url, options = {}) {
+  const method = String(options.method || 'GET').toUpperCase();
+  const path = getApiPath(url);
+  const body = getStaticRequestBody(options);
+
+  if (path === `${AUTH_BASE}/status` && method === 'GET') {
+    const user = firebaseAuth.currentUser || (await getFirebaseAuthState());
+
+    if (!user) {
+      return {
+        authenticated: false,
+        needsSetup: false,
+        user: null,
+      };
+    }
+
+    try {
+      const adminRecord = await getFirebaseAdminRecord(user);
+      return {
+        authenticated: true,
+        needsSetup: false,
+        user: toPublicFirebaseUser(user, adminRecord),
+      };
+    } catch (error) {
+      await signOut(firebaseAuth);
+      throw error;
+    }
+  }
+
+  if (path === `${AUTH_BASE}/setup` && method === 'POST') {
+    throw createApiError('أنشئ أول حساب أدمن من Firebase Console ثم أضفه إلى مجموعة admins.', 400);
+  }
+
+  if (path === `${AUTH_BASE}/login` && method === 'POST') {
+    const payload = validateStaticLoginPayload(body);
+    const credential = await signInWithEmailAndPassword(
+      firebaseAuth,
+      payload.username,
+      payload.password
+    );
+
+    try {
+      const adminRecord = await getFirebaseAdminRecord(credential.user);
+      return {
+        message: 'تم تسجيل الدخول بنجاح.',
+        data: toPublicFirebaseUser(credential.user, adminRecord),
+      };
+    } catch (error) {
+      await signOut(firebaseAuth);
+      throw error;
+    }
+  }
+
+  if (path === `${AUTH_BASE}/logout` && method === 'POST') {
+    await signOut(firebaseAuth);
+    return { message: 'تم تسجيل الخروج بنجاح.' };
+  }
+
+  if (path === `${AUTH_BASE}/create-account` && method === 'POST') {
+    const { user } = await requireFirebaseAdmin();
+    const payload = validateStaticSetupPayload(body);
+    const createdUser = await createFirebaseAdminAccount(payload, user);
+
+    return {
+      message: 'تم إنشاء الحساب بنجاح.',
+      data: createdUser,
+    };
+  }
+
+  if (path === `${AUTH_BASE}/change-password` && method === 'POST') {
+    const { user } = await requireFirebaseAdmin();
+    const payload = validateStaticChangePasswordPayload(body);
+    const credential = EmailAuthProvider.credential(user.email, payload.currentPassword);
+
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, payload.newPassword);
+
+    return { message: 'تم تغيير كلمة المرور بنجاح.' };
+  }
+
+  if (path === API_BASE && method === 'GET') {
+    await requireFirebaseAdmin();
+    return { data: await readFirebaseBookings() };
+  }
+
+  if (path === API_BASE && method === 'POST') {
+    await requireFirebaseAdmin();
+    const payload = validateStaticBookingPayload(body);
+    await assertFirebaseBookingDoesNotOverlap(payload);
+
+    const now = new Date().toISOString();
+    const bookingDocument = await addDoc(collection(firestoreDb, BOOKINGS_COLLECTION), {
+      ...getFirebaseBookingWritePayload(payload),
+      createdAt: serverTimestamp(),
+    });
+    const booking = {
+      id: bookingDocument.id,
+      ...payload,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    return {
+      message: 'تم إنشاء الحجز بنجاح.',
+      data: booking,
+    };
+  }
+
+  if (path.startsWith(`${API_BASE}/`)) {
+    await requireFirebaseAdmin();
+    const bookingId = decodeURIComponent(path.slice(API_BASE.length + 1));
+    const bookingReference = doc(firestoreDb, BOOKINGS_COLLECTION, bookingId);
+    const bookingSnapshot = await getDoc(bookingReference);
+
+    if (!bookingSnapshot.exists()) {
+      throw createApiError('لم يتم العثور على الحجز.', 404);
+    }
+
+    const currentBooking = normalizeFirebaseBooking(bookingSnapshot.id, bookingSnapshot.data());
+
+    if (method === 'PUT') {
+      const payload = validateStaticBookingPayload({
+        ...currentBooking,
+        ...body,
+      });
+      await assertFirebaseBookingDoesNotOverlap(payload, bookingId);
+      await updateDoc(bookingReference, getFirebaseBookingWritePayload(payload));
+
+      return {
+        message: 'تم تحديث الحجز بنجاح.',
+        data: {
+          ...currentBooking,
+          ...payload,
+          updatedAt: new Date().toISOString(),
+        },
+      };
+    }
+
+    if (method === 'DELETE') {
+      await deleteDoc(bookingReference);
+      return {
+        message: 'تم حذف الحجز بنجاح.',
+        data: currentBooking,
+      };
+    }
+  }
+
+  throw createApiError('تعذر العثور على نقطة نهاية API.', 404);
 }
 
 function readStorageValue(key) {
@@ -1291,17 +1722,17 @@ function validateStaticUsername(value, errors, fieldName = 'username') {
   const username = normalizeStaticText(value);
 
   if (!username) {
-    errors[fieldName] = 'اسم المستخدم مطلوب.';
+    errors[fieldName] = 'البريد الإلكتروني مطلوب.';
     return '';
   }
 
   if (username.length < 3) {
-    errors[fieldName] = 'يجب أن يكون اسم المستخدم بطول 3 أحرف على الأقل.';
+    errors[fieldName] = 'يجب أن يكون البريد الإلكتروني بطول 3 أحرف على الأقل.';
     return '';
   }
 
   if (username.length > 80) {
-    errors[fieldName] = 'يجب ألا يزيد اسم المستخدم عن 80 حرفًا.';
+    errors[fieldName] = 'يجب ألا يزيد البريد الإلكتروني عن 80 حرفًا.';
     return '';
   }
 
@@ -1388,8 +1819,14 @@ function validateStaticBookingPayload(payload) {
   const guestName = normalizeStaticText(payload.guestName);
   const phoneNumber = normalizeStaticText(payload.phoneNumber);
   const bookingDate = parseDateInput(payload.bookingDate) ? payload.bookingDate : '';
-  const bookingPeriod = bookingPeriodPrices[payload.bookingPeriod] ? payload.bookingPeriod : '';
+  const bookingPeriod = isValidBookingPeriod(payload.bookingPeriod) ? payload.bookingPeriod : '';
   const bookingType = bookingTypeLabels[payload.bookingType] ? payload.bookingType : '';
+  const parsedBookingPrice = payload.bookingPrice === '' || payload.bookingPrice === undefined
+    ? null
+    : Number(payload.bookingPrice);
+  const bookingPrice = Number.isInteger(parsedBookingPrice) && parsedBookingPrice >= 0
+    ? parsedBookingPrice
+    : null;
   const parsedDeposit = payload.depositAmount === '' || payload.depositAmount === undefined
     ? 0
     : Number(payload.depositAmount);
@@ -1425,13 +1862,15 @@ function validateStaticBookingPayload(payload) {
     errors.bookingType = 'يجب اختيار نوع الحجز.';
   }
 
+  if (bookingPrice === null) {
+    errors.bookingPrice = 'يجب إدخال قيمة الحجز كرقم صحيح أكبر من أو يساوي صفرًا.';
+  }
+
   if (depositAmount === null) {
     errors.depositAmount = 'يجب أن يكون الرعبون رقمًا صحيحًا أكبر من أو يساوي صفرًا.';
   }
 
-  const bookingPrice = bookingPeriod ? bookingPeriodPrices[bookingPeriod] : bookingPeriodPrices.morning;
-
-  if (depositAmount !== null && depositAmount > bookingPrice) {
+  if (bookingPrice !== null && depositAmount !== null && depositAmount > bookingPrice) {
     errors.depositAmount = 'الرعبون لا يمكن أن يتجاوز قيمة الحجز.';
   }
 
@@ -1529,7 +1968,7 @@ async function staticApiRequest(url, options = {}) {
     const user = findStaticUserByUsername(store, payload.username);
 
     if (!user || user.password !== payload.password) {
-      throw createApiError('اسم المستخدم أو كلمة المرور غير صحيحة.', 401);
+      throw createApiError('البريد الإلكتروني أو كلمة المرور غير صحيحة.', 401);
     }
 
     setStaticSessionUserId(user.id);
@@ -1550,7 +1989,7 @@ async function staticApiRequest(url, options = {}) {
     const payload = validateStaticSetupPayload(body);
 
     if (findStaticUserByUsername(store, payload.username)) {
-      throw createApiError('اسم المستخدم مستخدم بالفعل.', 409);
+      throw createApiError('البريد الإلكتروني مستخدم بالفعل.', 409);
     }
 
     const now = new Date().toISOString();
@@ -1666,7 +2105,19 @@ async function runStaticApiRequest(url, options = {}) {
   }
 }
 
+async function runFirebaseApiRequest(url, options = {}) {
+  try {
+    return await firebaseApiRequest(url, options);
+  } catch (error) {
+    const apiError = toFirebaseApiError(error);
+    processApiError(apiError);
+    throw apiError;
+  }
+}
+
 async function apiRequest(url, options = {}) {
+  return runFirebaseApiRequest(url, options);
+
   if (useStaticApi) {
     return runStaticApiRequest(url, options);
   }
@@ -1780,6 +2231,7 @@ function buildBookingPayload() {
     phoneNumber: normalizePhoneNumberInput(elements.phoneNumber.value),
     bookingDate: elements.bookingDate.value,
     bookingPeriod: getSelectedBookingPeriod(),
+    bookingPrice: elements.bookingPrice.value,
     bookingType: elements.bookingType.value,
     depositAmount: Number(elements.depositAmount.value || 0),
     notes: elements.notes.value.trim(),
@@ -2122,6 +2574,7 @@ function bindEvents() {
   elements.bookingPeriodRadios.forEach((radio) => {
     radio.addEventListener('change', updatePriceSummary);
   });
+  elements.bookingPrice.addEventListener('input', updatePriceSummary);
   elements.depositAmount.addEventListener('input', updatePriceSummary);
   elements.prevMonthButton.addEventListener('click', () => updateMonth(-1));
   elements.nextMonthButton.addEventListener('click', () => updateMonth(1));
