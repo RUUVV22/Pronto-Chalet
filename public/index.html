@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نظام حجوزات الشاليه</title>
+    <meta
+      name="description"
+      content=""
+    />
+    <link rel="stylesheet" href="/css/styles.css?v=booking-slots-5" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <section id="authView" class="auth-view">
+        <div class="auth-forms">
+          <article id="setupPanel" class="panel auth-card hidden">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">الإعداد الأولي</p>
+                <h2>إنشاء أول حساب إداري</h2>
+              </div>
+              <p class="panel-note">يظهر هذا النموذج فقط إذا لم يوجد أي حساب بعد.</p>
+            </div>
+
+            <form id="setupForm" class="auth-form" novalidate>
+              <label>
+                اسم المستخدم
+                <input id="setupUsername" type="text" autocomplete="username" required />
+              </label>
+
+              <label>
+                كلمة المرور
+                <input id="setupPassword" type="password" autocomplete="new-password" required />
+              </label>
+
+              <label>
+                تأكيد كلمة المرور
+                <input id="setupConfirmPassword" type="password" autocomplete="new-password" required />
+              </label>
+
+              <p id="setupMessage" class="form-message" role="status" aria-live="polite"></p>
+
+              <button class="primary-button" type="submit">إنشاء الحساب الأول</button>
+            </form>
+          </article>
+
+          <article id="loginPanel" class="panel auth-card">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">تسجيل الدخول</p>
+                <h2>الدخول إلى لوحة التحكم</h2>
+              </div>
+              <p class="panel-note">استخدم اسم المستخدم وكلمة المرور الخاصة بك فقط.</p>
+            </div>
+
+            <form id="loginForm" class="auth-form" novalidate>
+              <label>
+                اسم المستخدم
+                <input id="loginUsername" type="text" autocomplete="username" required />
+              </label>
+
+              <label>
+                كلمة المرور
+                <input id="loginPassword" type="password" autocomplete="current-password" required />
+              </label>
+
+              <p id="loginMessage" class="form-message" role="status" aria-live="polite"></p>
+
+              <button class="primary-button" type="submit">تسجيل الدخول</button>
+            </form>
+          </article>
+        </div>
+      </section>
+
+      <section id="dashboardView" class="dashboard-view hidden">
+        <header class="topbar panel">
+          <div class="brand-block">
+            <span class="brand-badge">خاص</span>
+            <div>
+              <p class="eyebrow">لوحة التحكم</p>
+              <h2 id="currentUserLabel">مرحبًا</h2>
+            </div>
+          </div>
+
+          <div class="topbar-actions">
+            <button id="accountButton" class="ghost-button" type="button">إدارة الحساب</button>
+            <button id="logoutButton" class="secondary-button" type="button">تسجيل الخروج</button>
+          </div>
+        </header>
+
+        <section class="hero-card stats-card">
+          <div class="hero-stats" aria-label="ملخص الحجوزات">
+            <article class="stat-card">
+              <span>إجمالي الحجوزات</span>
+              <strong id="statTotal">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>مؤكدة</span>
+              <strong id="statConfirmed">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>قيد الانتظار</span>
+              <strong id="statPending">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>ملغاة</span>
+              <strong id="statCancelled">0</strong>
+            </article>
+          </div>
+        </section>
+
+        <main class="dashboard-grid">
+          <aside class="panel booking-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">نموذج الحجز</p>
+                <h2 id="formHeading">إضافة حجز</h2>
+              </div>
+              <p class="panel-note">كل عملية يتم التحقق منها من جهة الخادم قبل الحفظ.</p>
+            </div>
+
+            <form id="bookingForm" class="booking-form" novalidate>
+              <input type="hidden" id="bookingId" />
+
+              <label>
+                اسم الضيف
+                <input id="guestName" name="guestName" type="text" placeholder="اسم الضيف" required />
+              </label>
+
+              <label>
+                رقم الهاتف
+                <input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  type="tel"
+                  placeholder="07xxxxxxxx"
+                  inputmode="numeric"
+                  maxlength="10"
+                  pattern="07[0-9]{8}"
+                  autocomplete="off"
+                  title="أدخل رقم هاتف من 10 أرقام يبدأ بـ 07"
+                  required
+                />
+              </label>
+
+              <label>
+                تاريخ الحجز
+                <input id="bookingDate" name="bookingDate" type="date" required />
+              </label>
+
+              <fieldset class="segmented-field">
+                <legend>فترة الحجز</legend>
+                <label>
+                  <input type="radio" name="bookingPeriod" value="morning" checked />
+                  <span>حجز صباحي</span>
+                </label>
+                <label>
+                  <input type="radio" name="bookingPeriod" value="evening" />
+                  <span>حجز مسائي</span>
+                </label>
+              </fieldset>
+
+              <div class="form-row">
+                <label>
+                  نوع الحجز
+                  <select id="bookingType" name="bookingType" required>
+                    <option value="normal">عادي</option>
+                    <option value="graduationParty">حجز حفلة توجيهي</option>
+                    <option value="hennaParty">حجز حفل حناء</option>
+                    <option value="engagementParty">حجز حفل خطبة</option>
+                    <option value="wedding">حجز عرس</option>
+                  </select>
+                </label>
+
+                <label>
+                  الحالة
+                  <select id="status" name="status">
+                    <option value="pending">قيد الانتظار</option>
+                    <option value="confirmed">مؤكد</option>
+                    <option value="cancelled">ملغي</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="form-row">
+                <label>
+                  الرعبون
+                  <input
+                    id="depositAmount"
+                    name="depositAmount"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value="0"
+                    inputmode="numeric"
+                    required
+                  />
+                </label>
+
+                <div class="price-summary" aria-live="polite">
+                  <span>قيمة الحجز: <strong id="bookingPriceLabel">١٤٠ دينار</strong></span>
+                  <span>القيمة المتبقية: <strong id="remainingAmountLabel">١٤٠ دينار</strong></span>
+                </div>
+              </div>
+
+              <label>
+                ملاحظات
+                <textarea
+                  id="notes"
+                  name="notes"
+                  rows="5"
+                  placeholder="أي ملاحظات خاصة أو تعليمات إضافية"
+                ></textarea>
+              </label>
+
+              <p id="bookingMessage" class="form-message" role="status" aria-live="polite"></p>
+
+              <div class="form-actions">
+                <button id="submitButton" class="primary-button" type="submit">حفظ الحجز</button>
+                <button id="cancelEditButton" class="secondary-button hidden" type="button">
+                  إلغاء التعديل
+                </button>
+              </div>
+            </form>
+          </aside>
+
+          <section class="dashboard-content">
+            <article class="panel calendar-panel">
+              <div class="panel-header calendar-header">
+                <div>
+                  <p class="eyebrow">التقويم</p>
+                  <h2 id="calendarTitle">الإتاحة</h2>
+                </div>
+
+                <div class="calendar-actions">
+                  <button id="prevMonthButton" class="ghost-button" type="button">الشهر السابق</button>
+                  <button id="todayButton" class="ghost-button" type="button">اليوم</button>
+                  <button id="nextMonthButton" class="ghost-button" type="button">الشهر التالي</button>
+                </div>
+              </div>
+
+              <div class="legend">
+                <span><i class="legend-swatch available"></i> متاح</span>
+                <span><i class="legend-swatch booked"></i> محجوز</span>
+                <span><i class="legend-swatch confirmed"></i> مؤكد</span>
+                <span><i class="legend-swatch pending"></i> قيد الانتظار</span>
+              </div>
+
+              <div id="selectedDateDetails" class="date-details" aria-live="polite"></div>
+
+              <div id="calendarGrid" class="calendar-grid" aria-label="تقويم الحجوزات الشهري"></div>
+            </article>
+
+            <article class="panel table-panel">
+              <div class="panel-header table-header">
+                <div>
+                  <p class="eyebrow">قائمة الحجوزات</p>
+                  <h2>السجلات</h2>
+                </div>
+
+                <label class="search-field">
+                  <span>البحث باسم الضيف</span>
+                  <input id="searchInput" type="search" placeholder="اكتب اسم الضيف" />
+                </label>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>الضيف</th>
+                      <th>التاريخ والفترة</th>
+                      <th>نوع الحجز</th>
+                      <th>القيمة</th>
+                      <th>الحالة</th>
+                      <th>ملاحظات</th>
+                      <th>تاريخ الإنشاء</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bookingsTableBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </main>
+      </section>
+
+      <section id="accountModal" class="modal hidden" aria-hidden="true">
+        <div class="modal-backdrop" data-close-account-modal></div>
+        <div class="modal-panel panel">
+          <div class="modal-header">
+            <div>
+              <p class="eyebrow">إدارة الحساب</p>
+              <h2>الحسابات وكلمة المرور</h2>
+            </div>
+            <button id="closeAccountModalButton" class="ghost-button" type="button">إغلاق</button>
+          </div>
+
+          <div class="modal-grid">
+            <article class="panel modal-card">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">إنشاء حساب</p>
+                  <h3>حساب إداري جديد</h3>
+                </div>
+                <p class="panel-note">يمكنك إضافة حسابات أخرى من هنا بعد تسجيل الدخول.</p>
+              </div>
+
+              <form id="createAccountForm" class="auth-form" novalidate>
+                <label>
+                  اسم المستخدم
+                  <input id="createUsername" type="text" autocomplete="username" required />
+                </label>
+
+                <label>
+                  كلمة المرور
+                  <input id="createPassword" type="password" autocomplete="new-password" required />
+                </label>
+
+                <label>
+                  تأكيد كلمة المرور
+                  <input id="createConfirmPassword" type="password" autocomplete="new-password" required />
+                </label>
+
+                <p id="createAccountMessage" class="form-message" role="status" aria-live="polite"></p>
+
+                <button class="primary-button" type="submit">إنشاء حساب</button>
+              </form>
+            </article>
+
+            <article class="panel modal-card">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">تغيير كلمة المرور</p>
+                  <h3>تحديث بيانات الدخول</h3>
+                </div>
+                <p class="panel-note">غيّر كلمة مرورك من هنا متى ما احتجت.</p>
+              </div>
+
+              <form id="changePasswordForm" class="auth-form" novalidate>
+                <label>
+                  كلمة المرور الحالية
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                  />
+                </label>
+
+                <label>
+                  كلمة المرور الجديدة
+                  <input id="newPassword" type="password" autocomplete="new-password" required />
+                </label>
+
+                <label>
+                  تأكيد كلمة المرور الجديدة
+                  <input
+                    id="confirmNewPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                  />
+                </label>
+
+                <p id="changePasswordMessage" class="form-message" role="status" aria-live="polite"></p>
+
+                <button class="primary-button" type="submit">تغيير كلمة المرور</button>
+              </form>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="bookingConflictModal"
+        class="modal hidden"
+        aria-hidden="true"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bookingConflictTitle"
+      >
+        <div class="modal-backdrop" data-close-booking-conflict></div>
+        <div class="modal-panel panel conflict-panel">
+          <div class="conflict-icon" aria-hidden="true">!</div>
+          <div class="conflict-copy">
+            <p class="eyebrow">تنبيه</p>
+            <h2 id="bookingConflictTitle">هذا الوقت محجوز</h2>
+            <p id="bookingConflictMessage">
+              يوجد حجز في هذا الوقت بالفعل. الرجاء اختيار وقت آخر.
+            </p>
+          </div>
+          <button id="closeBookingConflictButton" class="primary-button" type="button">حسنا</button>
+        </div>
+      </section>
+    </div>
+
+    <script src="/js/app.js?v=booking-slots-10" defer></script>
+  </body>
+</html>

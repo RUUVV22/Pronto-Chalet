@@ -1,0 +1,38 @@
+[
+  {
+    "token": "ses_f0ba9e81c77c6ace70110e1169a24d38e8e81349c774665d5169854d3f863909",
+    "userId": "usr_admin",
+    "createdAt": "2026-07-10T14:36:51.196Z",
+    "expiresAt": "2026-07-17T14:36:51.197Z"
+  },
+  {
+    "token": "ses_1b7374945553e83f4891a3ed82a647ce16d144f20b36784641028e36e15e1f4b",
+    "userId": "usr_admin",
+    "createdAt": "2026-07-10T14:37:34.705Z",
+    "expiresAt": "2026-07-17T14:37:34.705Z"
+  },
+  {
+    "token": "ses_00f46fa682a22b257761dcf2a51b2f177af34bedf4dbf6a68a4dc646436f8ce0",
+    "userId": "usr_admin",
+    "createdAt": "2026-07-10T14:38:21.210Z",
+    "expiresAt": "2026-07-17T14:38:21.210Z"
+  },
+  {
+    "token": "ses_6b07428271dbc8c8062272262bfe1a1fe617f220d33444460bc72da90bce4631",
+    "userId": "usr_admin",
+    "createdAt": "2026-07-10T14:54:33.246Z",
+    "expiresAt": "2026-07-17T14:54:33.246Z"
+  },
+  {
+    "token": "ses_9fc2cafe5f6b0c94baf275b8739556ebf0a1edd47c1011edd8886b8073f7a55b",
+    "userId": "usr_admin",
+    "createdAt": "2026-07-10T15:05:26.362Z",
+    "expiresAt": "2026-07-17T15:05:26.362Z"
+  },
+  {
+    "token": "ses_b1d6551db69df07c1252052f28284e8de4c790406ef210a2ce67529f98c8baeb",
+    "userId": "usr_5f62b3cd-3797-4bd7-a288-2240516382d1",
+    "createdAt": "2026-07-11T09:23:24.927Z",
+    "expiresAt": "2026-07-18T09:23:24.927Z"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "usr_admin",
+    "username": "admin",
+    "passwordHash": "decdbfbb4fe5e033340dda4068450e1a1c76c7dcda9c29cae1f255d5dbf0e100b890e69484fc162e25e14a827fb99fa25adc995c6a185ca0cd88a9c703363965",
+    "passwordSalt": "168dac36c9e792f0b27044d2fe6f5a8e20ebfad86d0852077d1698b302815284",
+    "createdAt": "2026-07-10T14:26:43.099Z",
+    "updatedAt": "2026-07-10T14:26:43.099Z"
+  },
+  {
+    "id": "usr_5f62b3cd-3797-4bd7-a288-2240516382d1",
+    "username": "islam",
+    "passwordHash": "0668e1a6966b03b912598532d22bfcda34e71fad188991088310e140b9f7cffbc9cbb475441b4227134a99aa527c7d4fed7dc1c90e91ecd169b11decfc87fcf5",
+    "passwordSalt": "79bd72346234f51c26caf2c02d7eecbc578909c55a0d31d86cef1f2f852bf419",
+    "createdAt": "2026-07-11T09:07:30.641Z",
+    "updatedAt": "2026-07-11T09:07:30.642Z"
+  }
+]
