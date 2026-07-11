@@ -1,10 +1,11 @@
-const CACHE_NAME = 'pronto-chalet-v1';
+const CACHE_NAME = 'pronto-chalet-v2';
 
 const APP_SHELL = [
   './',
   'index.html',
   'css/styles.css?v=booking-slots-5',
-  'js/app.js?v=booking-slots-10',
+  'js/app.js?v=booking-slots-11',
+  'assets/NoBackLogo.png',
   'manifest.webmanifest',
   'icons/icon-192.png',
   'icons/icon-512.png',

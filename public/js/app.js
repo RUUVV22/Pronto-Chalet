@@ -7,6 +7,7 @@ const PHONE_NUMBER_MAX_LENGTH = 10;
 
 const receiptInsuranceAmount = 30;
 const receiptCleaningDeduction = 20;
+const receiptLogoPath = 'assets/NoBackLogo.png';
 
 const receiptPage = {
   canvasWidth: 1240,
@@ -366,23 +367,26 @@ function drawRoundedRectangle(context, x, y, width, height, radius) {
   context.closePath();
 }
 
-function drawReceiptHeader(context) {
+function loadReceiptLogo() {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+
+    image.addEventListener('load', () => resolve(image), { once: true });
+    image.addEventListener('error', () => reject(new Error('Unable to load receipt logo.')), {
+      once: true,
+    });
+    image.src = receiptLogoPath;
+  });
+}
+
+function drawReceiptHeader(context, logo) {
   const centerX = receiptPage.canvasWidth / 2;
-  const logoY = 122;
+  const logoSize = 280;
+  const logoY = 88;
 
-  context.textAlign = 'center';
-  context.textBaseline = 'top';
-  context.direction = 'ltr';
-  context.fillStyle = '#7b4f17';
-  context.font = '900 54px Tahoma, Arial, sans-serif';
-  context.fillText('PRONTO', centerX, logoY);
+  context.drawImage(logo, centerX - logoSize / 2, logoY, logoSize, logoSize);
 
-  context.direction = 'rtl';
-  context.fillStyle = '#322312';
-  context.font = '700 25px Tahoma, Arial, sans-serif';
-  context.fillText('شالية برونتو - بيت راس', centerX, logoY + 70);
-
-  return logoY + 125;
+  return logoY + logoSize;
 }
 
 function wrapCanvasText(context, text, maxWidth) {
@@ -547,6 +551,7 @@ function drawReceiptText(context, receiptLines, startY, maxY) {
 }
 
 async function createBookingReceiptCanvas(booking) {
+  const logo = await loadReceiptLogo();
   const canvas = document.createElement('canvas');
   canvas.width = receiptPage.canvasWidth;
   canvas.height = receiptPage.canvasHeight;
@@ -570,7 +575,7 @@ async function createBookingReceiptCanvas(booking) {
   drawRoundedRectangle(context, 94, 94, canvas.width - 188, canvas.height - 188, 28);
   context.stroke();
 
-  const headerBottom = drawReceiptHeader(context);
+  const headerBottom = drawReceiptHeader(context, logo);
 
   drawReceiptText(context, buildReceiptLines(booking), headerBottom + 34, canvas.height - 145);
 
