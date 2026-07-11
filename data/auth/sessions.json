@@ -34,5 +34,11 @@
     "userId": "usr_5f62b3cd-3797-4bd7-a288-2240516382d1",
     "createdAt": "2026-07-11T09:23:24.927Z",
     "expiresAt": "2026-07-18T09:23:24.927Z"
+  },
+  {
+    "token": "ses_6167706c82dc23f9d3767eadaaecb5f885a6eb36673be2823a13b965d090d5f5",
+    "userId": "usr_admin",
+    "createdAt": "2026-07-11T10:20:53.723Z",
+    "expiresAt": "2026-07-18T10:20:53.724Z"
   }
 ]
