@@ -169,6 +169,7 @@ const elements = {
   bookingDate: document.getElementById('bookingDate'),
   bookingPeriodRadios: document.querySelectorAll('input[name="bookingPeriod"]'),
   bookingType: document.getElementById('bookingType'),
+  bookingTimeLabel: document.getElementById('bookingTimeLabel'),
   bookingPrice: document.getElementById('bookingPrice'),
   depositAmount: document.getElementById('depositAmount'),
   bookingPriceLabel: document.getElementById('bookingPriceLabel'),
@@ -373,6 +374,11 @@ function getReceiptTimes(booking) {
   return timesByType[period] || bookingPeriodTimes.normal.morning;
 }
 
+function formatBookingTimeRange(booking) {
+  const times = getReceiptTimes(booking);
+  return `من ${times.from} حتى ${times.to}`;
+}
+
 function buildReceiptLines(booking) {
   const bookingDate = getBookingDate(booking);
   const bookingPrice = getBookingPrice(booking);
@@ -396,7 +402,7 @@ function buildReceiptLines(booking) {
       variant: 'detail',
     },
     {
-      text: `🕙 الوقت: من ${receiptTimes.from} حتى ${receiptTimes.to}`,
+      text: `🕙 الوقت: ${formatBookingTimeRange(booking)}`,
       variant: 'detail',
     },
     {
@@ -1030,6 +1036,7 @@ function renderSelectedDateDetails() {
             <div><dt>عدد الضيوف</dt><dd>${
               getGuestCount(booking) ? formatNumber(getGuestCount(booking)) : 'غير محدد'
             }</dd></div>
+            <div><dt>الوقت</dt><dd>${formatBookingTimeRange(booking)}</dd></div>
             <div><dt>نوع الحجز</dt><dd>${getBookingTypeLabel(booking.bookingType)}</dd></div>
             <div><dt>قيمة الحجز</dt><dd>${formatCurrency(getBookingPrice(booking))}</dd></div>
             <div><dt>الرعبون</dt><dd>${formatCurrency(getDepositAmount(booking))}</dd></div>
@@ -1126,6 +1133,7 @@ function renderTable() {
             <div class="booking-meta">
               <strong>${formatDateDisplay(bookingDate)}</strong>
               <span>${getBookingPeriodLabel(getBookingPeriod(booking))}</span>
+              <span>${formatBookingTimeRange(booking)}</span>
             </div>
           </td>
           <td>${getBookingTypeLabel(booking.bookingType)}</td>
@@ -1208,6 +1216,20 @@ function updatePriceSummary() {
   elements.remainingAmountLabel.textContent = formatCurrency(Math.max(bookingPrice - deposit, 0));
 }
 
+function updateBookingTimeSummary() {
+  const booking = {
+    bookingPeriod: getSelectedBookingPeriod(),
+    bookingType: elements.bookingType.value,
+  };
+
+  elements.bookingTimeLabel.textContent = formatBookingTimeRange(booking);
+}
+
+function updateBookingFormSummaries() {
+  updatePriceSummary();
+  updateBookingTimeSummary();
+}
+
 function resetBookingForm() {
   state.editingBookingId = null;
   elements.bookingId.value = '';
@@ -1223,7 +1245,7 @@ function resetBookingForm() {
   elements.cancelEditButton.classList.add('hidden');
   clearMessage(elements.bookingMessage);
   elements.bookingDate.min = getTodayString();
-  updatePriceSummary();
+  updateBookingFormSummaries();
 }
 
 function fillBookingForm(booking) {
@@ -1239,7 +1261,7 @@ function fillBookingForm(booking) {
   elements.notes.value = booking.notes || '';
   elements.status.value = booking.status;
   setSelectedBookingPeriod(getBookingPeriod(booking));
-  updatePriceSummary();
+  updateBookingFormSummaries();
   elements.formHeading.textContent = 'تعديل الحجز';
   elements.submitButton.textContent = 'تحديث الحجز';
   elements.cancelEditButton.classList.remove('hidden');
@@ -1375,6 +1397,7 @@ function normalizeFirebaseBooking(documentId, data) {
     bookingType: bookingTypeLabels[booking.bookingType] ? booking.bookingType : 'normal',
     depositAmount,
     guestName: normalizeStaticText(booking.guestName),
+    guestCount: getGuestCount(booking),
     notes: normalizeStaticText(booking.notes),
     phoneNumber: normalizeStaticText(booking.phoneNumber),
     remainingAmount: Number.isInteger(Number(booking.remainingAmount))
@@ -1501,6 +1524,7 @@ function getFirebaseBookingWritePayload(payload) {
     bookingType: payload.bookingType,
     depositAmount: payload.depositAmount,
     guestName: payload.guestName,
+    guestCount: payload.guestCount,
     notes: payload.notes,
     phoneNumber: payload.phoneNumber,
     remainingAmount: payload.remainingAmount,
@@ -1914,6 +1938,12 @@ function validateStaticChangePasswordPayload(payload) {
 function validateStaticBookingPayload(payload) {
   const errors = {};
   const guestName = normalizeStaticText(payload.guestName);
+  const parsedGuestCount = payload.guestCount === '' || payload.guestCount === undefined
+    ? null
+    : Number(payload.guestCount);
+  const guestCount = Number.isInteger(parsedGuestCount) && parsedGuestCount > 0
+    ? parsedGuestCount
+    : null;
   const phoneNumber = normalizeStaticText(payload.phoneNumber);
   const bookingDate = parseDateInput(payload.bookingDate) ? payload.bookingDate : '';
   const bookingPeriod = isValidBookingPeriod(payload.bookingPeriod) ? payload.bookingPeriod : '';
@@ -1935,6 +1965,10 @@ function validateStaticBookingPayload(payload) {
 
   if (!guestName) {
     errors.guestName = 'اسم الضيف مطلوب.';
+  }
+
+  if (guestCount === null) {
+    errors.guestCount = 'يجب إدخال عدد الضيوف كرقم صحيح أكبر من صفر.';
   }
 
   if (!phoneNumber) {
@@ -1982,6 +2016,7 @@ function validateStaticBookingPayload(payload) {
     bookingType,
     depositAmount,
     guestName,
+    guestCount,
     notes,
     phoneNumber,
     remainingAmount: bookingPrice - depositAmount,
@@ -2326,6 +2361,7 @@ function buildBookingPayload() {
   return {
     guestName: elements.guestName.value.trim(),
     phoneNumber: normalizePhoneNumberInput(elements.phoneNumber.value),
+    guestCount: elements.guestCount.value,
     bookingDate: elements.bookingDate.value,
     bookingPeriod: getSelectedBookingPeriod(),
     bookingPrice: elements.bookingPrice.value,
@@ -2679,8 +2715,9 @@ function bindEvents() {
     renderTable();
   });
   elements.bookingPeriodRadios.forEach((radio) => {
-    radio.addEventListener('change', updatePriceSummary);
+    radio.addEventListener('change', updateBookingFormSummaries);
   });
+  elements.bookingType.addEventListener('change', updateBookingFormSummaries);
   elements.bookingPrice.addEventListener('input', updatePriceSummary);
   elements.depositAmount.addEventListener('input', updatePriceSummary);
   elements.prevMonthButton.addEventListener('click', () => updateMonth(-1));
@@ -2702,7 +2739,7 @@ function initializeDashboardState() {
   showView('auth');
   syncAuthPanels();
   initializeFormLimits();
-  updatePriceSummary();
+  updateBookingFormSummaries();
   setDashboardPage('add', { clearMessage: false });
   elements.currentUserLabel.textContent = 'مرحبًا';
 }

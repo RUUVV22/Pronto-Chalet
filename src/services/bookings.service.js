@@ -42,6 +42,9 @@ function normalizeBookingRecord(booking) {
     bookingType,
     depositAmount,
     guestName: String(booking.guestName || '').trim(),
+    guestCount: Number.isInteger(Number(booking.guestCount)) && Number(booking.guestCount) > 0
+      ? Number(booking.guestCount)
+      : 0,
     notes: String(booking.notes || '').trim(),
     phoneNumber: String(booking.phoneNumber || '').trim(),
     remainingAmount,
@@ -154,6 +157,7 @@ async function createBooking(payload) {
       createdAt: new Date().toISOString(),
       depositAmount: normalizedPayload.depositAmount,
       guestName: normalizedPayload.guestName,
+      guestCount: normalizedPayload.guestCount,
       notes: normalizedPayload.notes,
       phoneNumber: normalizedPayload.phoneNumber,
       remainingAmount: normalizedPayload.remainingAmount,

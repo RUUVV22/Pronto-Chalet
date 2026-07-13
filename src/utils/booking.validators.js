@@ -62,9 +62,24 @@ function normalizeAmountField(value, defaultValue = 0) {
   return parsedValue;
 }
 
+function normalizePositiveIntegerField(value, defaultValue = null) {
+  if (value === undefined || value === null || value === '') {
+    return defaultValue;
+  }
+
+  const parsedValue = Number(value);
+
+  if (!Number.isInteger(parsedValue) || parsedValue <= 0) {
+    return null;
+  }
+
+  return parsedValue;
+}
+
 function validateBookingPayload(payload) {
   const errors = {};
   const guestName = normalizeTextField(payload.guestName);
+  const guestCount = normalizePositiveIntegerField(payload.guestCount ?? payload.guests, null);
   const phoneNumber = normalizeTextField(payload.phoneNumber);
   const bookingDate = parseDateString(
     payload.bookingDate ?? payload.startDate ?? payload.endDate
@@ -85,6 +100,10 @@ function validateBookingPayload(payload) {
 
   if (!guestName) {
     errors.guestName = 'اسم الضيف مطلوب.';
+  }
+
+  if (guestCount === null) {
+    errors.guestCount = 'يجب إدخال عدد الضيوف كرقم صحيح أكبر من صفر.';
   }
 
   if (!phoneNumber) {
@@ -141,6 +160,7 @@ function validateBookingPayload(payload) {
     bookingType,
     depositAmount,
     guestName,
+    guestCount,
     notes,
     phoneNumber,
     remainingAmount: bookingPrice - depositAmount,
