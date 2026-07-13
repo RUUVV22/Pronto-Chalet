@@ -385,6 +385,46 @@ button {
   gap: 10px;
 }
 
+.management-nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+
+.management-tab {
+  min-height: 58px;
+  border: 1px solid rgba(111, 95, 82, 0.16);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+  font-weight: 800;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    border-color var(--transition),
+    background-color var(--transition),
+    color var(--transition);
+}
+
+.management-tab:hover {
+  transform: translateY(-1px);
+  border-color: rgba(71, 107, 93, 0.26);
+  color: var(--accent);
+}
+
+.management-tab.active {
+  border-color: rgba(138, 79, 45, 0.28);
+  background: linear-gradient(180deg, var(--brand), var(--brand-strong));
+  color: #fff;
+  box-shadow: 0 14px 24px rgba(109, 63, 36, 0.2);
+}
+
+.management-message {
+  min-height: 0;
+  padding-inline: 8px;
+}
+
 .hero-card {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
@@ -432,6 +472,14 @@ button {
   grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
   gap: 24px;
   align-items: start;
+}
+
+.dashboard-grid.list-mode {
+  grid-template-columns: 1fr;
+}
+
+.dashboard-grid.list-mode .dashboard-content {
+  grid-column: 1 / -1;
 }
 
 .dashboard-content {
@@ -995,6 +1043,10 @@ tbody tr:hover {
 }
 
 @media (max-width: 600px) {
+  .management-nav {
+    grid-template-columns: 1fr;
+  }
+
   .hero-stats,
   .modal-grid {
     grid-template-columns: 1fr;

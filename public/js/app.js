@@ -124,6 +124,7 @@ const bookingTypeLabels = {
 };
 
 const state = {
+  activeDashboardPage: 'add',
   authenticated: false,
   bookings: [],
   currentMonth: startOfMonth(new Date()),
@@ -152,10 +153,19 @@ const elements = {
   currentUserLabel: document.getElementById('currentUserLabel'),
   accountButton: document.getElementById('accountButton'),
   logoutButton: document.getElementById('logoutButton'),
+  addBookingPageButton: document.getElementById('addBookingPageButton'),
+  bookingsListPageButton: document.getElementById('bookingsListPageButton'),
+  managementMessage: document.getElementById('managementMessage'),
+  statsSection: document.getElementById('statsSection'),
+  managementWorkspace: document.getElementById('managementWorkspace'),
+  bookingPanel: document.getElementById('bookingPanel'),
+  calendarPanel: document.getElementById('calendarPanel'),
+  tablePanel: document.getElementById('tablePanel'),
   bookingForm: document.getElementById('bookingForm'),
   bookingId: document.getElementById('bookingId'),
   guestName: document.getElementById('guestName'),
   phoneNumber: document.getElementById('phoneNumber'),
+  guestCount: document.getElementById('guestCount'),
   bookingDate: document.getElementById('bookingDate'),
   bookingPeriodRadios: document.querySelectorAll('input[name="bookingPeriod"]'),
   bookingType: document.getElementById('bookingType'),
@@ -305,6 +315,11 @@ function getBookingPeriod(booking) {
   return booking.bookingPeriod === 'evening' ? 'evening' : 'morning';
 }
 
+function getGuestCount(booking) {
+  const guestCount = Number(booking.guestCount);
+  return Number.isInteger(guestCount) && guestCount > 0 ? guestCount : 0;
+}
+
 function getBookingPrice(booking) {
   const price = Number(booking.bookingPrice);
   return Number.isInteger(price) && price >= 0 ? price : 0;
@@ -363,6 +378,7 @@ function buildReceiptLines(booking) {
   const bookingPrice = getBookingPrice(booking);
   const depositAmount = getDepositAmount(booking);
   const remainingAmount = getRemainingAmount(booking);
+  const guestCount = getGuestCount(booking);
   const receiptTimes = getReceiptTimes(booking);
   const depositLineText =
     depositAmount > 0
@@ -385,6 +401,10 @@ function buildReceiptLines(booking) {
     },
     {
       text: `💰 قيمة الحجز: ${formatReceiptNumber(bookingPrice)} دينارًا`,
+      variant: 'detail',
+    },
+    {
+      text: `عدد الضيوف: ${guestCount ? formatReceiptNumber(guestCount) : 'غير محدد'}`,
       variant: 'detail',
     },
     {
@@ -454,7 +474,7 @@ function loadReceiptLogo() {
 function drawReceiptHeader(context, logo) {
   const centerX = receiptPage.canvasWidth / 2;
   const logoSize = 280;
-  const logoY = 88;
+  const logoY = 150;
 
   context.drawImage(logo, centerX - logoSize / 2, logoY, logoSize, logoSize);
 
@@ -843,6 +863,31 @@ function showView(viewName) {
   elements.dashboardView.classList.toggle('hidden', !dashboardVisible);
 }
 
+function setDashboardPage(pageName, options = {}) {
+  const nextPage = pageName === 'list' ? 'list' : 'add';
+  const listVisible = nextPage === 'list';
+
+  state.activeDashboardPage = nextPage;
+  elements.statsSection.classList.toggle('hidden', !listVisible);
+  elements.bookingPanel.classList.toggle('hidden', listVisible);
+  elements.calendarPanel.classList.toggle('hidden', listVisible);
+  elements.tablePanel.classList.toggle('hidden', !listVisible);
+  elements.managementWorkspace.classList.toggle('list-mode', listVisible);
+
+  elements.addBookingPageButton.classList.toggle('active', !listVisible);
+  elements.bookingsListPageButton.classList.toggle('active', listVisible);
+  elements.addBookingPageButton.setAttribute('aria-pressed', String(!listVisible));
+  elements.bookingsListPageButton.setAttribute('aria-pressed', String(listVisible));
+
+  if (options.clearMessage !== false) {
+    clearMessage(elements.managementMessage);
+  }
+
+  if (options.scroll) {
+    elements.managementWorkspace.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
 function syncAuthPanels() {
   elements.setupPanel.classList.toggle('hidden', !state.needsSetup || state.authenticated);
   elements.loginPanel.classList.toggle('hidden', state.needsSetup || state.authenticated);
@@ -895,11 +940,13 @@ function renderCalendar() {
 
     const dateString = formatDateInput(new Date(year, month, dayNumber));
     const bookings = getBookingsForDate(dateString);
-    const dayClasses = ['calendar-day', bookings.length > 0 ? 'booked' : 'available'];
-
-    if (bookings.length === bookingPeriodOrder.length) {
-      dayClasses.push('full');
-    }
+    const bookedPeriods = new Set(bookings.map((booking) => getBookingPeriod(booking)));
+    const bookedPeriodCount = bookedPeriods.size;
+    const isFullDay = bookedPeriodCount >= bookingPeriodOrder.length;
+    const dayAvailabilityClass = isFullDay ? 'full' : bookedPeriodCount > 0 ? 'partial' : 'available';
+    const dayStatusClass = isFullDay ? 'confirmed' : bookedPeriodCount > 0 ? 'partial' : 'available';
+    const dayStatusLabel = isFullDay ? 'محجوز' : bookedPeriodCount > 0 ? 'متاح جزئيًا' : 'متاح';
+    const dayClasses = ['calendar-day', dayAvailabilityClass];
 
     if (dateString === todayString) {
       dayClasses.push('today');
@@ -929,8 +976,8 @@ function renderCalendar() {
     cells.push(`
       <button class="${dayClasses.join(' ')}" type="button" data-date="${dateString}">
         <span class="day-number">${formatNumber(dayNumber)}</span>
-        <span class="day-status ${bookings.length ? 'confirmed' : 'available'}">
-          ${bookings.length ? 'محجوز' : 'متاح'}
+        <span class="day-status ${dayStatusClass}">
+          ${dayStatusLabel}
         </span>
         <span class="day-guest">${slotHtml}</span>
       </button>
@@ -980,6 +1027,9 @@ function renderSelectedDateDetails() {
           <dl>
             <div><dt>الضيف</dt><dd>${escapeHtml(booking.guestName)}</dd></div>
             <div><dt>الهاتف</dt><dd>${escapeHtml(booking.phoneNumber)}</dd></div>
+            <div><dt>عدد الضيوف</dt><dd>${
+              getGuestCount(booking) ? formatNumber(getGuestCount(booking)) : 'غير محدد'
+            }</dd></div>
             <div><dt>نوع الحجز</dt><dd>${getBookingTypeLabel(booking.bookingType)}</dd></div>
             <div><dt>قيمة الحجز</dt><dd>${formatCurrency(getBookingPrice(booking))}</dd></div>
             <div><dt>الرعبون</dt><dd>${formatCurrency(getDepositAmount(booking))}</dd></div>
@@ -1066,6 +1116,9 @@ function renderTable() {
             <div class="booking-meta">
               <strong>${escapeHtml(booking.guestName)}</strong>
               <span>${escapeHtml(booking.phoneNumber)}</span>
+              <span>عدد الضيوف: ${
+                getGuestCount(booking) ? formatNumber(getGuestCount(booking)) : 'غير محدد'
+              }</span>
               <span>#${escapeHtml(booking.id.slice(0, 8))}</span>
             </div>
           </td>
@@ -1112,6 +1165,7 @@ function renderDashboard() {
   renderCalendar();
   renderSelectedDateDetails();
   renderTable();
+  setDashboardPage(state.activeDashboardPage, { clearMessage: false });
 }
 
 function getSelectedBookingPeriod() {
@@ -1160,6 +1214,7 @@ function resetBookingForm() {
   elements.bookingForm.reset();
   elements.status.value = 'pending';
   elements.bookingType.value = 'normal';
+  elements.guestCount.value = '';
   elements.bookingPrice.value = '';
   elements.depositAmount.value = '0';
   setSelectedBookingPeriod('morning');
@@ -1176,6 +1231,7 @@ function fillBookingForm(booking) {
   elements.bookingId.value = booking.id;
   elements.guestName.value = booking.guestName;
   elements.phoneNumber.value = normalizePhoneNumberInput(booking.phoneNumber);
+  elements.guestCount.value = getGuestCount(booking) ? String(getGuestCount(booking)) : '';
   elements.bookingDate.value = getBookingDate(booking);
   elements.bookingType.value = booking.bookingType || 'normal';
   elements.bookingPrice.value = String(getBookingPrice(booking));
@@ -1196,6 +1252,7 @@ function handleSessionExpired(message = 'انتهت الجلسة، سجّل ال
   state.user = null;
   state.bookings = [];
   state.searchTerm = '';
+  state.activeDashboardPage = 'add';
   state.editingBookingId = null;
   state.needsSetup = false;
   closeAccountModal();
@@ -2309,6 +2366,7 @@ async function submitSetupForm(event) {
 
     state.authenticated = true;
     state.needsSetup = false;
+    state.activeDashboardPage = 'add';
     state.user = result.data;
     syncAuthPanels();
     showView('dashboard');
@@ -2336,6 +2394,7 @@ async function submitLoginForm(event) {
 
     state.authenticated = true;
     state.needsSetup = false;
+    state.activeDashboardPage = 'add';
     state.user = result.data;
     state.searchTerm = '';
     elements.loginForm.reset();
@@ -2360,6 +2419,7 @@ async function submitLogout() {
     state.user = null;
     state.bookings = [];
     state.searchTerm = '';
+    state.activeDashboardPage = 'add';
     state.editingBookingId = null;
     state.needsSetup = false;
     closeAccountModal();
@@ -2439,13 +2499,13 @@ async function deleteBooking(bookingId) {
 
   try {
     const result = await apiRequest(`${API_BASE}/${bookingId}`, { method: 'DELETE' });
-    setFormMessage(elements.bookingMessage, result.message, 'success');
+    setFormMessage(elements.managementMessage, result.message, 'success');
     if (state.editingBookingId === bookingId) {
       resetBookingForm();
     }
     await loadBookings();
   } catch (error) {
-    setFormMessage(elements.bookingMessage, error.message, 'error');
+    setFormMessage(elements.managementMessage, error.message, 'error');
   }
 }
 
@@ -2471,6 +2531,7 @@ function handleTableClick(event) {
       return;
     }
 
+    setDashboardPage('add', { clearMessage: false });
     fillBookingForm(booking);
     return;
   }
@@ -2588,6 +2649,12 @@ function bindEvents() {
   elements.loginForm.addEventListener('submit', submitLoginForm);
   elements.logoutButton.addEventListener('click', submitLogout);
   elements.accountButton.addEventListener('click', openAccountModal);
+  elements.addBookingPageButton.addEventListener('click', () => {
+    setDashboardPage('add', { scroll: true });
+  });
+  elements.bookingsListPageButton.addEventListener('click', () => {
+    setDashboardPage('list', { scroll: true });
+  });
   elements.closeAccountModalButton.addEventListener('click', closeAccountModal);
   elements.accountModal.addEventListener('click', (event) => {
     if (event.target.matches('[data-close-account-modal]')) {
@@ -2636,6 +2703,7 @@ function initializeDashboardState() {
   syncAuthPanels();
   initializeFormLimits();
   updatePriceSummary();
+  setDashboardPage('add', { clearMessage: false });
   elements.currentUserLabel.textContent = 'مرحبًا';
 }
 

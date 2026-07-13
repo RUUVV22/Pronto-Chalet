@@ -99,7 +99,28 @@
           </div>
         </header>
 
-        <section class="hero-card stats-card">
+        <nav class="management-nav panel" aria-label="إدارة الحجوزات">
+          <button
+            id="addBookingPageButton"
+            class="management-tab active"
+            type="button"
+            aria-pressed="true"
+          >
+            إضافة حجز
+          </button>
+          <button
+            id="bookingsListPageButton"
+            class="management-tab"
+            type="button"
+            aria-pressed="false"
+          >
+            قائمة الحجوزات
+          </button>
+        </nav>
+
+        <p id="managementMessage" class="form-message management-message" role="status" aria-live="polite"></p>
+
+        <section id="statsSection" class="hero-card stats-card hidden">
           <div class="hero-stats" aria-label="ملخص الحجوزات">
             <article class="stat-card">
               <span>إجمالي الحجوزات</span>
@@ -120,8 +141,8 @@
           </div>
         </section>
 
-        <main class="dashboard-grid">
-          <aside class="panel booking-panel">
+        <main id="managementWorkspace" class="dashboard-grid">
+          <aside id="bookingPanel" class="panel booking-panel">
             <div class="panel-header">
               <div>
                 <p class="eyebrow">نموذج الحجز</p>
@@ -150,6 +171,20 @@
                   pattern="07[0-9]{8}"
                   autocomplete="off"
                   title="أدخل رقم هاتف من 10 أرقام يبدأ بـ 07"
+                  required
+                />
+              </label>
+
+              <label>
+                عدد الضيوف
+                <input
+                  id="guestCount"
+                  name="guestCount"
+                  type="number"
+                  min="1"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="أدخل عدد الضيوف"
                   required
                 />
               </label>
@@ -251,7 +286,7 @@
           </aside>
 
           <section class="dashboard-content">
-            <article class="panel calendar-panel">
+            <article id="calendarPanel" class="panel calendar-panel">
               <div class="panel-header calendar-header">
                 <div>
                   <p class="eyebrow">التقويم</p>
@@ -277,7 +312,7 @@
               <div id="calendarGrid" class="calendar-grid" aria-label="تقويم الحجوزات الشهري"></div>
             </article>
 
-            <article class="panel table-panel">
+            <article id="tablePanel" class="panel table-panel hidden">
               <div class="panel-header table-header">
                 <div>
                   <p class="eyebrow">قائمة الحجوزات</p>
