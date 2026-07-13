@@ -30,6 +30,7 @@ const ARABIC_LOCALE = 'ar-SA-u-ca-gregory';
 const PHONE_NUMBER_MAX_LENGTH = 10;
 const BOOKINGS_COLLECTION = 'bookings';
 const ADMINS_COLLECTION = 'admins';
+const BOOTSTRAP_ADMIN_EMAILS = new Set(['islamalawneh4@gmail.com']);
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDjmBwQn2i5S94g7lB5guDAfH9Wn8AhDlo',
@@ -46,6 +47,14 @@ const secondaryFirebaseApp = initializeApp(firebaseConfig, 'secondary-admin-crea
 const firebaseAuth = getAuth(firebaseApp);
 const secondaryFirebaseAuth = getAuth(secondaryFirebaseApp);
 const firestoreDb = getFirestore(firebaseApp);
+
+function normalizeEmailAddress(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function isBootstrapAdminEmail(email) {
+  return BOOTSTRAP_ADMIN_EMAILS.has(normalizeEmailAddress(email));
+}
 
 const receiptInsuranceAmount = 30;
 const receiptCleaningDeduction = 20;
@@ -1266,6 +1275,31 @@ function toPublicFirebaseUser(user, adminRecord = {}) {
   };
 }
 
+async function getBootstrapFirebaseAdminRecord(user) {
+  const email = normalizeEmailAddress(user.email);
+  const adminRecord = {
+    email,
+    role: 'admin',
+  };
+
+  try {
+    await setDoc(
+      doc(firestoreDb, ADMINS_COLLECTION, user.uid),
+      {
+        ...adminRecord,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    // The bootstrap rule may not be deployed yet. The caller can still use
+    // the in-memory admin record for login, while Firestore writes remain gated.
+  }
+
+  return adminRecord;
+}
+
 function normalizeFirebaseBooking(documentId, data) {
   const booking = {
     id: documentId,
@@ -1352,10 +1386,13 @@ async function getFirebaseAdminRecord(user) {
     adminSnapshot = await getDoc(doc(firestoreDb, ADMINS_COLLECTION, user.uid));
   } catch (error) {
     if (String(error && error.code ? error.code : '').includes('permission-denied')) {
+      if (isBootstrapAdminEmail(user.email)) {
+        return getBootstrapFirebaseAdminRecord(user);
+      }
+
       throw createApiError(
         `هذا الحساب غير مصرح له باستخدام لوحة التحكم. انشر قواعد Firestore ثم تأكد من وجود المستند admins/${user.uid}.`,
-        403,
-        { email: user.email || '', uid: user.uid }
+        403
       );
     }
 
@@ -1363,10 +1400,13 @@ async function getFirebaseAdminRecord(user) {
   }
 
   if (!adminSnapshot.exists()) {
+    if (isBootstrapAdminEmail(user.email)) {
+      return getBootstrapFirebaseAdminRecord(user);
+    }
+
     throw createApiError(
       `هذا الحساب غير مصرح له باستخدام لوحة التحكم. أضف مستند Firestore باسم admins/${user.uid}.`,
-      403,
-      { email: user.email || '', uid: user.uid }
+      403
     );
   }
 
@@ -2473,7 +2513,7 @@ function formatValidationErrors(errors) {
   }
 
   return Object.values(errors)
-    .filter(Boolean)
+    .filter((message) => typeof message === 'string' && message)
     .join(' ');
 }
 
