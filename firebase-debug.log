@@ -1,0 +1,338 @@
+[debug] [2026-07-13T08:01:00.375Z] ----------------------------------------------------------------------
+[debug] [2026-07-13T08:01:00.378Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2026-07-13T08:01:00.379Z] CLI Version:   15.23.0
+[debug] [2026-07-13T08:01:00.379Z] Platform:      win32
+[debug] [2026-07-13T08:01:00.379Z] Node Version:  v20.19.5
+[debug] [2026-07-13T08:01:00.379Z] Detected Agent: codex_cli
+[debug] [2026-07-13T08:01:00.380Z] Time:          Mon Jul 13 2026 11:01:00 GMT+0300 (GMT+03:00)
+[debug] [2026-07-13T08:01:00.380Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-07-13T08:01:00.400Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-07-13T08:01:05.254Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-07-13T08:01:05.299Z] Error: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.
+    at GoogleAuth.getApplicationDefaultAsync (C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\google-auth-library\build\src\auth\googleauth.js:287:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async GoogleAuth._GoogleAuth_determineClient (C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\google-auth-library\build\src\auth\googleauth.js:834:32)
+    at async GoogleAuth.getClient (C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\google-auth-library\build\src\auth\googleauth.js:698:20)
+    at async GoogleAuth.getAccessToken (C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\google-auth-library\build\src\auth\googleauth.js:722:24)
+    at async autoAuth (C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\requireAuth.js:38:19)
+    at async requireAuth (C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\requireAuth.js:100:20)
+    at async requirePermissions (C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\requirePermissions.js:17:5)
+    at async C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\command.js:278:17
+[error] 
+[error] Error: Failed to authenticate, have you run firebase login?
+[debug] [2026-07-13T08:01:24.758Z] ----------------------------------------------------------------------
+[debug] [2026-07-13T08:01:24.761Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\bin\firebase.js login
+[debug] [2026-07-13T08:01:24.761Z] CLI Version:   15.23.0
+[debug] [2026-07-13T08:01:24.761Z] Platform:      win32
+[debug] [2026-07-13T08:01:24.762Z] Node Version:  v20.19.5
+[debug] [2026-07-13T08:01:24.762Z] Detected Agent: codex_cli
+[debug] [2026-07-13T08:01:24.762Z] Time:          Mon Jul 13 2026 11:01:24 GMT+0300 (GMT+03:00)
+[debug] [2026-07-13T08:01:24.762Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-07-13T08:01:24.774Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[error] 
+[error] Error: Cannot run login in non-interactive mode. See login:ci to generate a token for use in non-interactive environments.
+[debug] [2026-07-13T08:01:41.933Z] ----------------------------------------------------------------------
+[debug] [2026-07-13T08:01:41.936Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\bin\firebase.js login --no-localhost
+[debug] [2026-07-13T08:01:41.936Z] CLI Version:   15.23.0
+[debug] [2026-07-13T08:01:41.936Z] Platform:      win32
+[debug] [2026-07-13T08:01:41.936Z] Node Version:  v20.19.5
+[debug] [2026-07-13T08:01:41.936Z] Detected Agent: codex_cli
+[debug] [2026-07-13T08:01:41.937Z] Time:          Mon Jul 13 2026 11:01:41 GMT+0300 (GMT+03:00)
+[debug] [2026-07-13T08:01:41.937Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-07-13T08:01:41.948Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[info] i  The Firebase CLI’s MCP server feature can optionally make use of Gemini in Firebase. Learn more about Gemini in Firebase and how it uses your data: https://firebase.google.com/docs/gemini-in-firebase#how-gemini-in-firebase-uses-your-data 
+[debug] [2026-07-13T08:01:42.644Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-07-13T08:01:42.645Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[info] 
+[info] i  Firebase optionally collects CLI and Emulator Suite usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you. 
+[debug] [2026-07-13T08:02:50.854Z] >>> [apiv2][query] POST https://auth.firebase.tools/attest [none]
+[debug] [2026-07-13T08:02:50.855Z] >>> [apiv2][body] POST https://auth.firebase.tools/attest {"session_id":"fb2f17e8-013d-4db5-bc2d-c401857356df"}
+[debug] [2026-07-13T08:02:51.675Z] <<< [apiv2][status] POST https://auth.firebase.tools/attest 200
+[debug] [2026-07-13T08:02:51.675Z] <<< [apiv2][body] POST https://auth.firebase.tools/attest {"token":"SjvHvB38zwU3AETnwFMMaGA7a71CCUUPMTqigvplKTU"}
+[info] 
+[info] To sign in to the Firebase CLI:
+[info] 
+[info] 1. Take note of your session ID:
+[info] 
+[info]    FB2F1
+[info] 
+[info] 2. Visit the URL below on any device and follow the instructions to get your code:
+[info] 
+[info]    https://auth.firebase.tools/login?code_challenge=T3BByqGNVN19tXlpIVzQnDH1lyrkef3uoHCXBtzNPaw&session=fb2f17e8-013d-4db5-bc2d-c401857356df&attest=SjvHvB38zwU3AETnwFMMaGA7a71CCUUPMTqigvplKTU
+[info] 
+[info] 3. Paste or enter the authorization code below once you have it:
+[info] 
+[debug] [2026-07-13T08:07:51.289Z] ExitPromptError: User force closed the prompt with SIGINT
+    at Interface.sigint (C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\@inquirer\core\dist\commonjs\lib\create-prompt.js:101:37)
+    at Interface.emit (node:events:524:28)
+    at Interface._ttyWriteDumb (node:readline:478:14)
+    at ReadStream.onkeypress (node:internal/readline/interface:267:20)
+    at ReadStream.emit (node:events:536:35)
+    at emitKeys (node:internal/readline/utils:371:14)
+    at emitKeys.next (<anonymous>)
+    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
+    at ReadStream.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2026-07-13T08:08:08.621Z] ----------------------------------------------------------------------
+[debug] [2026-07-13T08:08:08.624Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\bin\firebase.js login --no-localhost
+[debug] [2026-07-13T08:08:08.624Z] CLI Version:   15.23.0
+[debug] [2026-07-13T08:08:08.624Z] Platform:      win32
+[debug] [2026-07-13T08:08:08.624Z] Node Version:  v20.19.5
+[debug] [2026-07-13T08:08:08.625Z] Detected Agent: codex_cli
+[debug] [2026-07-13T08:08:08.625Z] Time:          Mon Jul 13 2026 11:08:08 GMT+0300 (GMT+03:00)
+[debug] [2026-07-13T08:08:08.625Z] ----------------------------------------------------------------------
+[debug] 
+[info] i  The Firebase CLI’s MCP server feature can optionally make use of Gemini in Firebase. Learn more about Gemini in Firebase and how it uses your data: https://firebase.google.com/docs/gemini-in-firebase#how-gemini-in-firebase-uses-your-data 
+[info] 
+[info] i  Firebase optionally collects CLI and Emulator Suite usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you. 
+[debug] [2026-07-13T08:09:02.797Z] >>> [apiv2][query] POST https://auth.firebase.tools/attest [none]
+[debug] [2026-07-13T08:09:02.797Z] >>> [apiv2][body] POST https://auth.firebase.tools/attest {"session_id":"90bc754f-1ae9-43a3-8ba4-192df7fae022"}
+[debug] [2026-07-13T08:09:03.724Z] <<< [apiv2][status] POST https://auth.firebase.tools/attest 200
+[debug] [2026-07-13T08:09:03.724Z] <<< [apiv2][body] POST https://auth.firebase.tools/attest {"token":"mODFPZNuwyKajwfqpL3otV9ENYJOg61g1M36MZSTDB8"}
+[info] 
+[info] To sign in to the Firebase CLI:
+[info] 
+[info] 1. Take note of your session ID:
+[info] 
+[info]    90BC7
+[info] 
+[info] 2. Visit the URL below on any device and follow the instructions to get your code:
+[info] 
+[info]    https://auth.firebase.tools/login?code_challenge=wAF8fAlnc2Jt9e1MuScLvYU4LS3XgH0ao6cPuoEAQb8&session=90bc754f-1ae9-43a3-8ba4-192df7fae022&attest=mODFPZNuwyKajwfqpL3otV9ENYJOg61g1M36MZSTDB8
+[info] 
+[info] 3. Paste or enter the authorization code below once you have it:
+[info] 
+[debug] [2026-07-13T08:13:03.309Z] >>> [apiv2][query] POST https://accounts.google.com/o/oauth2/token [none]
+[debug] [2026-07-13T08:13:03.309Z] >>> [apiv2][body] POST https://accounts.google.com/o/oauth2/token [omitted]
+[debug] [2026-07-13T08:13:03.556Z] <<< [apiv2][status] POST https://accounts.google.com/o/oauth2/token 200
+[debug] [2026-07-13T08:13:17.904Z] ----------------------------------------------------------------------
+[debug] [2026-07-13T08:13:17.907Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\GIGABYTE\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2026-07-13T08:13:17.907Z] CLI Version:   15.23.0
+[debug] [2026-07-13T08:13:17.907Z] Platform:      win32
+[debug] [2026-07-13T08:13:17.907Z] Node Version:  v20.19.5
+[debug] [2026-07-13T08:13:17.908Z] Detected Agent: codex_cli
+[debug] [2026-07-13T08:13:17.908Z] Time:          Mon Jul 13 2026 11:13:17 GMT+0300 (GMT+03:00)
+[debug] [2026-07-13T08:13:17.908Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-07-13T08:13:19.984Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-07-13T08:13:19.985Z] > authorizing via signed-in user (islamalawneh4@gmail.com)
+[debug] [2026-07-13T08:13:19.985Z] [iam] checking project prontochalet-f75b6 for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-07-13T08:13:19.988Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:19.988Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:19.989Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/prontochalet-f75b6:testIamPermissions [none]
+[debug] [2026-07-13T08:13:19.990Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/prontochalet-f75b6:testIamPermissions  x-goog-user-project=prontochalet-f75b6
+[debug] [2026-07-13T08:13:19.990Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/prontochalet-f75b6:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-07-13T08:13:20.401Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/prontochalet-f75b6:testIamPermissions 200
+[debug] [2026-07-13T08:13:20.402Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/prontochalet-f75b6:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-07-13T08:13:20.403Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:20.403Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:20.403Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/prontochalet-f75b6 [none]
+[debug] [2026-07-13T08:13:20.956Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/prontochalet-f75b6 200
+[debug] [2026-07-13T08:13:20.956Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/prontochalet-f75b6 {"projectId":"prontochalet-f75b6","projectNumber":"107619810614","displayName":"ProntoChalet","name":"projects/prontochalet-f75b6","resources":{"hostingSite":"prontochalet-f75b6"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_36b0fb78-986f-47b0-bdbc-0c23865284a4"}
+[info] 
+[info] === Deploying to 'prontochalet-f75b6'...
+[info] 
+[info] i  deploying firestore, hosting 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-07-13T08:13:20.960Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:20.960Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:20.960Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/prontochalet-f75b6/services/firestore.googleapis.com [none]
+[debug] [2026-07-13T08:13:20.960Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/prontochalet-f75b6/services/firestore.googleapis.com  x-goog-user-project=prontochalet-f75b6
+[debug] [2026-07-13T08:13:21.523Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/prontochalet-f75b6/services/firestore.googleapis.com 200
+[debug] [2026-07-13T08:13:21.523Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/prontochalet-f75b6/services/firestore.googleapis.com [omitted]
+[info] +  firestore: required API firestore.googleapis.com is enabled 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-07-13T08:13:21.529Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:21.529Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:21.529Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default) [none]
+[debug] [2026-07-13T08:13:22.530Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default) 200
+[debug] [2026-07-13T08:13:22.530Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default) {"name":"projects/prontochalet-f75b6/databases/(default)","uid":"be28b483-b68d-40a1-925e-f4a56f86318f","createTime":"2026-07-11T19:41:42.654753Z","updateTime":"2026-07-11T19:41:42.654753Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-07-13T07:13:22.492273Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"ILKbx8+az5UDMLz40rmxy5UD"}
+[info] i  firestore: reading indexes from firestore.indexes.json... 
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2026-07-13T08:13:22.531Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:22.531Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:22.531Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6:test [none]
+[debug] [2026-07-13T08:13:22.531Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6:test [omitted]
+[debug] [2026-07-13T08:13:22.990Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6:test 200
+[debug] [2026-07-13T08:13:22.990Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6:test {}
+[info] +  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2026-07-13T08:13:22.991Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:22.991Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:22.991Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/prontochalet-f75b6/sites/prontochalet-f75b6 [none]
+[debug] [2026-07-13T08:13:24.259Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/prontochalet-f75b6/sites/prontochalet-f75b6 200
+[debug] [2026-07-13T08:13:24.259Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/prontochalet-f75b6/sites/prontochalet-f75b6 {"name":"projects/prontochalet-f75b6/sites/prontochalet-f75b6","defaultUrl":"https://prontochalet-f75b6.web.app","appId":"1:107619810614:web:b3b1dad78a0a8c08054797","type":"DEFAULT_SITE"}
+[debug] [2026-07-13T08:13:24.260Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:24.261Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:24.261Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/versions [none]
+[debug] [2026-07-13T08:13:24.261Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2026-07-13T08:13:27.931Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/versions 200
+[debug] [2026-07-13T08:13:27.931Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/versions {"name":"projects/107619810614/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2026-07-13T08:13:27.932Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:27.932Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:27.933Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/releases pageSize=10&pageToken=
+[debug] [2026-07-13T08:13:28.801Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/releases 200
+[debug] [2026-07-13T08:13:28.801Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/releases {"releases":[{"name":"projects/prontochalet-f75b6/releases/cloud.firestore","rulesetName":"projects/prontochalet-f75b6/rulesets/762c369c-6808-4708-875f-e44ced1d1014","createTime":"2026-07-11T19:41:45.603943Z","updateTime":"2026-07-11T19:41:45.603943Z"}]}
+[debug] [2026-07-13T08:13:28.801Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:28.801Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:28.802Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/rulesets/762c369c-6808-4708-875f-e44ced1d1014 [none]
+[debug] [2026-07-13T08:13:29.148Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/rulesets/762c369c-6808-4708-875f-e44ced1d1014 200
+[debug] [2026-07-13T08:13:29.148Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/rulesets/762c369c-6808-4708-875f-e44ced1d1014 [omitted]
+[info] i  firestore: uploading rules firestore.rules... 
+[debug] [2026-07-13T08:13:29.149Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:29.149Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:29.150Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/rulesets [none]
+[debug] [2026-07-13T08:13:29.150Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/rulesets [omitted]
+[debug] [2026-07-13T08:13:29.560Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/rulesets 200
+[debug] [2026-07-13T08:13:29.561Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/rulesets {"name":"projects/prontochalet-f75b6/rulesets/8bcb5e9c-f31c-4830-9aaa-c40b65588a84","source":{"files":[{"content":"rules_version = '2';\r\n\r\nservice cloud.firestore {\r\n  match /databases/{database}/documents {\r\n    function isSignedIn() {\n      return request.auth != null;\n    }\n\n    function isBootstrapAdmin() {\n      return isSignedIn() &&\n        request.auth.token.email in ['islamalawneh4@gmail.com'];\n    }\n\n    function isAdmin() {\n      return isSignedIn() &&\n        (\n          isBootstrapAdmin() ||\n          exists(/databases/$(database)/documents/admins/$(request.auth.uid))\n        );\n    }\n\r\n    match /bookings/{bookingId} {\r\n      allow read, create, update, delete: if isAdmin();\r\n    }\r\n\r\n    match /admins/{uid} {\r\n      allow get: if (isSignedIn() && request.auth.uid == uid) || isAdmin();\r\n      allow list: if isAdmin();\r\n      allow create, update, delete: if isAdmin();\r\n    }\r\n  }\r\n}\r\n","name":"firestore.rules"}]},"createTime":"2026-07-13T08:13:29.499599Z","metadata":{"services":["cloud.firestore"]}}
+[debug] [2026-07-13T08:13:29.561Z] [rules] created ruleset projects/prontochalet-f75b6/rulesets/8bcb5e9c-f31c-4830-9aaa-c40b65588a84
+[info] i  firestore: deploying indexes... 
+[debug] [2026-07-13T08:13:29.562Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:29.562Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:29.562Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default)/collectionGroups/-/indexes [none]
+[debug] [2026-07-13T08:13:30.564Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default)/collectionGroups/-/indexes 200
+[debug] [2026-07-13T08:13:30.564Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default)/collectionGroups/-/indexes {}
+[debug] [2026-07-13T08:13:30.564Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:30.564Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:30.564Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* [none]
+[debug] [2026-07-13T08:13:30.810Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* 200
+[debug] [2026-07-13T08:13:30.810Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* {"fields":[{"name":"projects/prontochalet-f75b6/databases/(default)/collectionGroups/__default__/fields/*","indexConfig":{"indexes":[{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"ASCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"DESCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","arrayConfig":"CONTAINS"}],"state":"READY"}]}}]}
+[debug] [2026-07-13T08:13:30.810Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:30.810Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:30.810Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default) [none]
+[debug] [2026-07-13T08:13:31.030Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default) 200
+[debug] [2026-07-13T08:13:31.030Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/prontochalet-f75b6/databases/(default) {"name":"projects/prontochalet-f75b6/databases/(default)","uid":"be28b483-b68d-40a1-925e-f4a56f86318f","createTime":"2026-07-11T19:41:42.654753Z","updateTime":"2026-07-11T19:41:42.654753Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-07-13T07:13:30.991941Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IPD7zdOaz5UDMLz40rmxy5UD"}
+[info] +  firestore: deployed indexes in firestore.indexes.json successfully for (default) database 
+[info] i  hosting[prontochalet-f75b6]: beginning deploy... 
+[info] i  hosting[prontochalet-f75b6]: found 11 files in public 
+[debug] [2026-07-13T08:13:31.045Z] [hosting] uploading with 200 concurrency
+[debug] [2026-07-13T08:13:31.046Z] [hosting] hash cache [cHVibGlj] not populated
+[debug] [2026-07-13T08:13:31.115Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.115Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.116Z] [hosting] hash cache [cHVibGlj] stored for 11 files
+[debug] [2026-07-13T08:13:31.117Z] [hosting][hash queue][FINAL] {"max":65,"min":5,"avg":11.909090909090908,"active":0,"complete":11,"success":11,"errored":0,"retried":0,"total":11,"elapsed":71}
+[debug] [2026-07-13T08:13:31.117Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/107619810614/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8:populateFiles [none]
+[debug] [2026-07-13T08:13:31.117Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/107619810614/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8:populateFiles {"files":{"/service-worker.js":"c02745a854605d6ef875e3bd95c22505ee45446a16fe96cd97fef1520c9761e4","/manifest.webmanifest":"3f049d4a9b00aa50798bf38a00d0585b81f0a44cb18581d8188281e94145b7ad","/index.html":"4eb78be46544d923d5e52cf69757b990561b538d5f3bcd5041a70de66ad793d9","/icons/icon-32.png":"eee41c21344bdb4fda2707bd27dd0014ef95172c228d30c0e0937a5a9d59d42e","/icons/icon-192.png":"452064a7ca4c17d7d9e9f88e206d9a0524e849d46edeca15a3da6896157187ca","/icons/apple-touch-icon.png":"37ba22fcbada2fc57ed0635927e7a632b9d9e09b7f143fc05e6fe9017ff24b59","/css/styles.css":"d523c2fc13f71fc7b9c3f6c0d047f2bf23c08b974391797390d7c75328b2efbd","/icons/maskable-icon-512.png":"84f6b4d2a86c601ba84360a0f67bf05c43431e601f7122283386ce032b4f60b5","/icons/icon-512.png":"bd0cf2b0f41687394c3371f060e09ffc8a7de5493bae5ae8a3fa669139c82416","/js/app.js":"3c6863f34dd696b05e00d3d3d2ed9220087ffacd0de1d3780dccd448edc0900e","/assets/NoBackLogo.png":"f9b14544e404b4ec937a0537cd7391dc029f117e5d356695be7eeb280107c8f1"}}
+[debug] [2026-07-13T08:13:31.949Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/107619810614/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8:populateFiles 200
+[debug] [2026-07-13T08:13:31.949Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/107619810614/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8:populateFiles {"uploadRequiredHashes":["3c6863f34dd696b05e00d3d3d2ed9220087ffacd0de1d3780dccd448edc0900e","3f049d4a9b00aa50798bf38a00d0585b81f0a44cb18581d8188281e94145b7ad","d523c2fc13f71fc7b9c3f6c0d047f2bf23c08b974391797390d7c75328b2efbd","bd0cf2b0f41687394c3371f060e09ffc8a7de5493bae5ae8a3fa669139c82416","f9b14544e404b4ec937a0537cd7391dc029f117e5d356695be7eeb280107c8f1","4eb78be46544d923d5e52cf69757b990561b538d5f3bcd5041a70de66ad793d9","84f6b4d2a86c601ba84360a0f67bf05c43431e601f7122283386ce032b4f60b5","eee41c21344bdb4fda2707bd27dd0014ef95172c228d30c0e0937a5a9d59d42e","452064a7ca4c17d7d9e9f88e206d9a0524e849d46edeca15a3da6896157187ca","c02745a854605d6ef875e3bd95c22505ee45446a16fe96cd97fef1520c9761e4","37ba22fcbada2fc57ed0635927e7a632b9d9e09b7f143fc05e6fe9017ff24b59"],"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files"}
+[debug] [2026-07-13T08:13:31.950Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.950Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.950Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.950Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.950Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.950Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.951Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.951Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.951Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.951Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.951Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.951Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.952Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.952Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.952Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.952Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.952Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.952Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.952Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.953Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.953Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.953Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:31.953Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/3c6863f34dd696b05e00d3d3d2ed9220087ffacd0de1d3780dccd448edc0900e [none]
+[debug] [2026-07-13T08:13:31.953Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/3c6863f34dd696b05e00d3d3d2ed9220087ffacd0de1d3780dccd448edc0900e [stream]
+[debug] [2026-07-13T08:13:31.954Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/3f049d4a9b00aa50798bf38a00d0585b81f0a44cb18581d8188281e94145b7ad [none]
+[debug] [2026-07-13T08:13:31.955Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/3f049d4a9b00aa50798bf38a00d0585b81f0a44cb18581d8188281e94145b7ad [stream]
+[debug] [2026-07-13T08:13:31.956Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/d523c2fc13f71fc7b9c3f6c0d047f2bf23c08b974391797390d7c75328b2efbd [none]
+[debug] [2026-07-13T08:13:31.956Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/d523c2fc13f71fc7b9c3f6c0d047f2bf23c08b974391797390d7c75328b2efbd [stream]
+[debug] [2026-07-13T08:13:31.956Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/bd0cf2b0f41687394c3371f060e09ffc8a7de5493bae5ae8a3fa669139c82416 [none]
+[debug] [2026-07-13T08:13:31.957Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/bd0cf2b0f41687394c3371f060e09ffc8a7de5493bae5ae8a3fa669139c82416 [stream]
+[debug] [2026-07-13T08:13:31.957Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/f9b14544e404b4ec937a0537cd7391dc029f117e5d356695be7eeb280107c8f1 [none]
+[debug] [2026-07-13T08:13:31.958Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/f9b14544e404b4ec937a0537cd7391dc029f117e5d356695be7eeb280107c8f1 [stream]
+[debug] [2026-07-13T08:13:31.958Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/4eb78be46544d923d5e52cf69757b990561b538d5f3bcd5041a70de66ad793d9 [none]
+[debug] [2026-07-13T08:13:31.958Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/4eb78be46544d923d5e52cf69757b990561b538d5f3bcd5041a70de66ad793d9 [stream]
+[debug] [2026-07-13T08:13:31.959Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/84f6b4d2a86c601ba84360a0f67bf05c43431e601f7122283386ce032b4f60b5 [none]
+[debug] [2026-07-13T08:13:31.959Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/84f6b4d2a86c601ba84360a0f67bf05c43431e601f7122283386ce032b4f60b5 [stream]
+[debug] [2026-07-13T08:13:31.960Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/eee41c21344bdb4fda2707bd27dd0014ef95172c228d30c0e0937a5a9d59d42e [none]
+[debug] [2026-07-13T08:13:31.960Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/eee41c21344bdb4fda2707bd27dd0014ef95172c228d30c0e0937a5a9d59d42e [stream]
+[debug] [2026-07-13T08:13:31.960Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/452064a7ca4c17d7d9e9f88e206d9a0524e849d46edeca15a3da6896157187ca [none]
+[debug] [2026-07-13T08:13:31.960Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/452064a7ca4c17d7d9e9f88e206d9a0524e849d46edeca15a3da6896157187ca [stream]
+[debug] [2026-07-13T08:13:31.961Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/c02745a854605d6ef875e3bd95c22505ee45446a16fe96cd97fef1520c9761e4 [none]
+[debug] [2026-07-13T08:13:31.961Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/c02745a854605d6ef875e3bd95c22505ee45446a16fe96cd97fef1520c9761e4 [stream]
+[debug] [2026-07-13T08:13:31.962Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/37ba22fcbada2fc57ed0635927e7a632b9d9e09b7f143fc05e6fe9017ff24b59 [none]
+[debug] [2026-07-13T08:13:31.962Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/37ba22fcbada2fc57ed0635927e7a632b9d9e09b7f143fc05e6fe9017ff24b59 [stream]
+[debug] [2026-07-13T08:13:31.968Z] [hosting][populate queue][FINAL] {"max":838,"min":838,"avg":838,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":853}
+[debug] [2026-07-13T08:13:31.968Z] [hosting] uploads queued: 11
+[debug] [2026-07-13T08:13:33.016Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/c02745a854605d6ef875e3bd95c22505ee45446a16fe96cd97fef1520c9761e4 200
+[debug] [2026-07-13T08:13:33.016Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/c02745a854605d6ef875e3bd95c22505ee45446a16fe96cd97fef1520c9761e4 [stream]
+[debug] [2026-07-13T08:13:33.018Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/37ba22fcbada2fc57ed0635927e7a632b9d9e09b7f143fc05e6fe9017ff24b59 200
+[debug] [2026-07-13T08:13:33.018Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/37ba22fcbada2fc57ed0635927e7a632b9d9e09b7f143fc05e6fe9017ff24b59 [stream]
+[debug] [2026-07-13T08:13:33.019Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/eee41c21344bdb4fda2707bd27dd0014ef95172c228d30c0e0937a5a9d59d42e 200
+[debug] [2026-07-13T08:13:33.019Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/eee41c21344bdb4fda2707bd27dd0014ef95172c228d30c0e0937a5a9d59d42e [stream]
+[debug] [2026-07-13T08:13:33.028Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/452064a7ca4c17d7d9e9f88e206d9a0524e849d46edeca15a3da6896157187ca 200
+[debug] [2026-07-13T08:13:33.028Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/452064a7ca4c17d7d9e9f88e206d9a0524e849d46edeca15a3da6896157187ca [stream]
+[debug] [2026-07-13T08:13:33.031Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/d523c2fc13f71fc7b9c3f6c0d047f2bf23c08b974391797390d7c75328b2efbd 200
+[debug] [2026-07-13T08:13:33.031Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/d523c2fc13f71fc7b9c3f6c0d047f2bf23c08b974391797390d7c75328b2efbd [stream]
+[info] i  hosting: uploading new files [5/11] (45%) 
+[debug] [2026-07-13T08:13:33.052Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/3f049d4a9b00aa50798bf38a00d0585b81f0a44cb18581d8188281e94145b7ad 200
+[debug] [2026-07-13T08:13:33.052Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/3f049d4a9b00aa50798bf38a00d0585b81f0a44cb18581d8188281e94145b7ad [stream]
+[debug] [2026-07-13T08:13:33.068Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/3c6863f34dd696b05e00d3d3d2ed9220087ffacd0de1d3780dccd448edc0900e 200
+[debug] [2026-07-13T08:13:33.069Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/3c6863f34dd696b05e00d3d3d2ed9220087ffacd0de1d3780dccd448edc0900e [stream]
+[debug] [2026-07-13T08:13:33.092Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/4eb78be46544d923d5e52cf69757b990561b538d5f3bcd5041a70de66ad793d9 200
+[debug] [2026-07-13T08:13:33.092Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/4eb78be46544d923d5e52cf69757b990561b538d5f3bcd5041a70de66ad793d9 [stream]
+[debug] [2026-07-13T08:13:33.143Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/bd0cf2b0f41687394c3371f060e09ffc8a7de5493bae5ae8a3fa669139c82416 200
+[debug] [2026-07-13T08:13:33.143Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/bd0cf2b0f41687394c3371f060e09ffc8a7de5493bae5ae8a3fa669139c82416 [stream]
+[debug] [2026-07-13T08:13:33.179Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/84f6b4d2a86c601ba84360a0f67bf05c43431e601f7122283386ce032b4f60b5 200
+[debug] [2026-07-13T08:13:33.179Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/84f6b4d2a86c601ba84360a0f67bf05c43431e601f7122283386ce032b4f60b5 [stream]
+[debug] [2026-07-13T08:13:33.727Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/f9b14544e404b4ec937a0537cd7391dc029f117e5d356695be7eeb280107c8f1 200
+[debug] [2026-07-13T08:13:33.727Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8/files/f9b14544e404b4ec937a0537cd7391dc029f117e5d356695be7eeb280107c8f1 [stream]
+[debug] [2026-07-13T08:13:33.727Z] [hosting][upload queue][FINAL] {"max":1776,"min":1065,"avg":1174.2727272727273,"active":0,"complete":11,"success":11,"errored":0,"retried":0,"total":11,"elapsed":1778}
+[info] i  hosting: upload complete 
+[info] +  hosting[prontochalet-f75b6]: file upload complete 
+[debug] [2026-07-13T08:13:33.727Z] [hosting] deploy completed after 2694ms
+[debug] [2026-07-13T08:13:33.728Z] [rules] releasing cloud.firestore with ruleset projects/prontochalet-f75b6/rulesets/8bcb5e9c-f31c-4830-9aaa-c40b65588a84
+[debug] [2026-07-13T08:13:33.728Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:33.728Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:33.728Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/releases/cloud.firestore [none]
+[debug] [2026-07-13T08:13:33.728Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/releases/cloud.firestore {"release":{"name":"projects/prontochalet-f75b6/releases/cloud.firestore","rulesetName":"projects/prontochalet-f75b6/rulesets/8bcb5e9c-f31c-4830-9aaa-c40b65588a84"}}
+[debug] [2026-07-13T08:13:34.707Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/releases/cloud.firestore 200
+[debug] [2026-07-13T08:13:34.707Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/prontochalet-f75b6/releases/cloud.firestore {"name":"projects/prontochalet-f75b6/releases/cloud.firestore","rulesetName":"projects/prontochalet-f75b6/rulesets/8bcb5e9c-f31c-4830-9aaa-c40b65588a84","createTime":"2026-07-11T19:41:45.603943Z","updateTime":"2026-07-13T08:13:34.656451Z"}
+[debug] [2026-07-13T08:13:34.707Z] [rules] updated release projects/prontochalet-f75b6/releases/cloud.firestore
+[info] +  firestore: released rules firestore.rules to cloud.firestore 
+[debug] [2026-07-13T08:13:34.708Z] [
+  {
+    "config": {
+      "public": "public",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "site": "prontochalet-f75b6"
+    },
+    "version": "projects/107619810614/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8"
+  }
+]
+[info] i  hosting[prontochalet-f75b6]: finalizing version... 
+[debug] [2026-07-13T08:13:34.709Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:34.709Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:34.710Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8 updateMask=status%2Cconfig
+[debug] [2026-07-13T08:13:34.710Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8 {"status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]}}
+[debug] [2026-07-13T08:13:36.307Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8 200
+[debug] [2026-07-13T08:13:36.307Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8 {"name":"projects/107619810614/sites/prontochalet-f75b6/versions/c5d91ef7ab13e5c8","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-07-13T08:13:25.006210Z","createUser":{"email":"islamalawneh4@gmail.com"},"finalizeTime":"2026-07-13T08:13:36.200558Z","finalizeUser":{"email":"islamalawneh4@gmail.com"}}
+[debug] [2026-07-13T08:13:36.307Z] [hosting] finalized version for prontochalet-f75b6:[object Object]
+[info] +  hosting[prontochalet-f75b6]: version finalized 
+[info] i  hosting[prontochalet-f75b6]: releasing new version... 
+[debug] [2026-07-13T08:13:36.307Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:36.307Z] Checked if tokens are valid: true, expires at: 1783933982557
+[debug] [2026-07-13T08:13:36.307Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/channels/live/releases versionName=projects%2F107619810614%2Fsites%2Fprontochalet-f75b6%2Fversions%2Fc5d91ef7ab13e5c8
+[debug] [2026-07-13T08:13:36.308Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/channels/live/releases {}
+[debug] [2026-07-13T08:13:37.571Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/prontochalet-f75b6/channels/live/releases 200
