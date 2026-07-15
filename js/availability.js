@@ -352,9 +352,17 @@ function getPeriodLabel(period) {
   return period === 'evening' ? 'الفترة المسائية' : 'الفترة الصباحية';
 }
 
+function getPeriodShortLabel(period) {
+  return period === 'evening' ? 'مساء' : 'صباح';
+}
+
 function getPeriodTimeRange(period) {
   const times = bookingPeriodTimes[period] || bookingPeriodTimes.morning;
   return `${times.from} - ${times.to}`;
+}
+
+function getCompactPeriodTimeRange(period) {
+  return period === 'evening' ? '10:00 م - 8:00 ص' : '10:00 ص - 8:00 م';
 }
 
 function renderLoadingCalendar() {
@@ -405,12 +413,16 @@ function renderCalendar() {
     const bookedPeriods = getBookedPeriods(dateString);
     const slotSummary = bookingPeriodOrder
       .map(
-        (period) => `
-          <span>
-            <strong>${getPeriodLabel(period)}: ${bookedPeriods.has(period) ? 'محجوز' : 'متاح'}</strong>
-            <small>${getPeriodTimeRange(period)}</small>
+        (period) => {
+          const isBooked = bookedPeriods.has(period);
+
+          return `
+          <span class="${isBooked ? 'booked' : 'available'}">
+            <strong>${getPeriodShortLabel(period)}: ${isBooked ? 'محجوز' : 'متاح'}</strong>
+            <small>${getCompactPeriodTimeRange(period)}</small>
           </span>
-        `
+        `;
+        }
       )
       .join('');
 

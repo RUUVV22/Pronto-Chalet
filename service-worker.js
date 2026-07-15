@@ -1,13 +1,13 @@
-const CACHE_NAME = 'pronto-chalet-public-background-v2';
+const CACHE_NAME = 'pronto-chalet-public-background-v3';
 
 const APP_SHELL = [
   './',
   'index.html',
   'availability.html',
   'css/styles.css?v=loading-logo-1',
-  'css/availability.css?v=public-availability-4',
+  'css/availability.css?v=public-availability-5',
   'js/app.js?v=loading-logo-1',
-  'js/availability.js?v=public-availability-4',
+  'js/availability.js?v=public-availability-5',
   'assets/NoBackLogo.png',
   'assets/chalet-backgrounds/chalet-bg-01.jpg',
   'manifest.webmanifest',
