@@ -74,9 +74,9 @@ button:disabled {
   filter: blur(14px);
   transform: scale(1.08);
   transition:
-    opacity 1800ms ease,
-    filter 1800ms ease,
-    transform 7000ms ease;
+    opacity 2800ms ease,
+    filter 2800ms ease,
+    transform 9800ms ease;
   will-change: opacity, filter, transform;
 }
 
@@ -160,7 +160,7 @@ button:disabled {
 
 .calendar-panel,
 .day-panel {
-  padding: 24px;
+  padding: 20px;
 }
 
 .day-panel {
@@ -173,7 +173,7 @@ button:disabled {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .eyebrow {
@@ -224,7 +224,7 @@ h2 {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   color: var(--muted);
   font-size: 0.92rem;
 }
@@ -256,7 +256,7 @@ h2 {
 
 .status-message {
   min-height: 1.4em;
-  margin: 0 0 14px;
+  margin: 0 0 10px;
   color: var(--muted);
   line-height: 1.6;
 }
@@ -268,17 +268,17 @@ h2 {
 .availability-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .calendar-weekday,
 .calendar-day {
-  border-radius: 18px;
+  border-radius: 14px;
 }
 
 .calendar-weekday {
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   padding: 0 10px 2px;
@@ -289,11 +289,11 @@ h2 {
 .calendar-day {
   display: grid;
   align-content: start;
-  gap: 8px;
-  min-height: 102px;
+  gap: 5px;
+  min-height: 82px;
   width: 100%;
   border: 1px solid rgba(111, 95, 82, 0.14);
-  padding: 12px;
+  padding: 9px;
   color: var(--text);
   text-align: right;
   transition:
@@ -330,7 +330,7 @@ h2 {
 }
 
 .calendar-day.empty {
-  min-height: 102px;
+  min-height: 82px;
   border: 1px dashed rgba(111, 95, 82, 0.12);
   background: transparent;
   pointer-events: none;
@@ -344,8 +344,8 @@ h2 {
 .day-label {
   width: fit-content;
   border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 0.72rem;
+  padding: 4px 8px;
+  font-size: 0.66rem;
   font-weight: 900;
 }
 
@@ -366,23 +366,29 @@ h2 {
 
 .day-slots {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   color: var(--muted);
-  font-size: 0.84rem;
-  line-height: 1.4;
+  font-size: 0.74rem;
+  line-height: 1.24;
 }
 
 .day-slots span {
   display: grid;
-  gap: 2px;
+  gap: 1px;
+}
+
+.day-slots strong {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
 }
 
 .day-slots small,
 .slot-copy small {
   color: var(--muted);
-  font-size: 0.76rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.2;
 }
 
 .selected-day-status {
@@ -537,8 +543,8 @@ h2 {
 
   .calendar-day,
   .calendar-day.empty {
-    min-height: 78px;
-    padding: 8px;
+    min-height: 64px;
+    padding: 7px;
   }
 
   .day-slots {

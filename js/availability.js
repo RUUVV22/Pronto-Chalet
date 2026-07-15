@@ -41,7 +41,7 @@ const backgroundImages = [
   'assets/chalet-backgrounds/chalet-bg-25.jpeg',
   'assets/chalet-backgrounds/chalet-bg-26.jpeg',
 ];
-const backgroundSlideInterval = 6500;
+const backgroundSlideInterval = 8200;
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDjmBwQn2i5S94g7lB5guDAfH9Wn8AhDlo',
@@ -92,6 +92,14 @@ function buildBackgroundSlide(imagePath, index) {
   return slide;
 }
 
+function preloadBackgroundImages() {
+  backgroundImages.forEach((imagePath) => {
+    const image = new Image();
+    image.decoding = 'async';
+    image.src = imagePath;
+  });
+}
+
 function startCssBackgroundRotation(slides) {
   let activeIndex = 0;
 
@@ -135,7 +143,7 @@ function startGsapBackgroundRotation(slides) {
 
   gsap.to(slides[activeIndex], {
     ...getBackgroundMotion(),
-    duration: backgroundSlideInterval / 1000 + 1,
+    duration: backgroundSlideInterval / 1000 + 1.8,
     ease: 'sine.inOut',
   });
 
@@ -150,8 +158,8 @@ function startGsapBackgroundRotation(slides) {
     gsap.killTweensOf([currentSlide, nextSlide]);
     gsap.set(nextSlide, {
       autoAlpha: 0,
-      filter: 'blur(16px)',
-      scale: 1.13,
+      filter: 'blur(18px)',
+      scale: 1.11,
       xPercent: -nextMotion.xPercent,
       yPercent: -nextMotion.yPercent,
     });
@@ -162,10 +170,10 @@ function startGsapBackgroundRotation(slides) {
         currentSlide,
         {
           autoAlpha: 0,
-          filter: 'blur(12px)',
-          scale: 1.02,
-          duration: 1.8,
-          ease: 'power2.inOut',
+          filter: 'blur(10px)',
+          scale: 1.04,
+          duration: 3,
+          ease: 'sine.inOut',
         },
         0
       )
@@ -175,8 +183,8 @@ function startGsapBackgroundRotation(slides) {
           autoAlpha: 1,
           filter: 'blur(0px)',
           scale: 1.06,
-          duration: 1.8,
-          ease: 'power2.inOut',
+          duration: 3,
+          ease: 'sine.inOut',
         },
         0
       )
@@ -184,7 +192,7 @@ function startGsapBackgroundRotation(slides) {
         nextSlide,
         {
           ...nextMotion,
-          duration: backgroundSlideInterval / 1000 + 1.2,
+          duration: backgroundSlideInterval / 1000 + 2.2,
           ease: 'sine.inOut',
         },
         0
@@ -202,6 +210,7 @@ function initializeBackgroundSlideshow() {
   const fragment = document.createDocumentFragment();
   const slides = backgroundImages.map((imagePath, index) => buildBackgroundSlide(imagePath, index));
 
+  preloadBackgroundImages();
   slides.forEach((slide) => fragment.appendChild(slide));
   elements.backgroundStage.appendChild(fragment);
   startGsapBackgroundRotation(slides);
@@ -398,13 +407,12 @@ function renderCalendar() {
       .map(
         (period) => `
           <span>
-            ${getPeriodLabel(period)}
+            <strong>${getPeriodLabel(period)}: ${bookedPeriods.has(period) ? 'محجوز' : 'متاح'}</strong>
             <small>${getPeriodTimeRange(period)}</small>
-            ${bookedPeriods.has(period) ? 'محجوز' : 'متاح'}
           </span>
         `
       )
-      .join('<br />');
+      .join('');
 
     if (dateString === todayString) {
       dayClasses.push('today');
