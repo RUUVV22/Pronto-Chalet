@@ -2,7 +2,7 @@ const assert = require('assert');
 const fs = require('fs/promises');
 const path = require('path');
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'Admin12345!';
 const UPDATED_PASSWORD = 'Admin12345!New';
@@ -135,8 +135,10 @@ async function run() {
         body: JSON.stringify({
           guestName: 'Smoke Test Guest',
           phoneNumber: '0700000004',
+          guestCount: 12,
           bookingDate: BOOKING_DATE,
           bookingPeriod: 'morning',
+          bookingPrice: 240,
           bookingType: 'graduationParty',
           depositAmount: 40,
           notes: 'Auth smoke test',
@@ -148,6 +150,20 @@ async function run() {
 
     assert.strictEqual(createBooking.response.status, 201);
 
+    const publicAvailability = await request('/api/public/availability');
+    assert.strictEqual(publicAvailability.response.status, 200);
+    assert.ok(Array.isArray(publicAvailability.payload.data));
+    assert.ok(
+      publicAvailability.payload.data.some(
+        (slot) => slot.bookingDate === BOOKING_DATE && slot.bookingPeriod === 'morning'
+      )
+    );
+    assert.ok(
+      publicAvailability.payload.data.every(
+        (slot) => !('guestName' in slot) && !('phoneNumber' in slot) && !('notes' in slot)
+      )
+    );
+
     const conflictBooking = await request(
       '/api/bookings',
       {
@@ -158,8 +174,10 @@ async function run() {
         body: JSON.stringify({
           guestName: 'Overlap Guest',
           phoneNumber: '0700000005',
+          guestCount: 9,
           bookingDate: BOOKING_DATE,
           bookingPeriod: 'morning',
+          bookingPrice: 180,
           bookingType: 'normal',
           depositAmount: 10,
           notes: '',

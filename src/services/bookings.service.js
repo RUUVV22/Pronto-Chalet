@@ -91,6 +91,14 @@ function filterBookingsByGuestName(bookings, searchTerm) {
   );
 }
 
+function toPublicAvailabilitySlot(booking) {
+  return {
+    bookingDate: booking.bookingDate,
+    bookingPeriod: booking.bookingPeriod,
+    status: 'booked',
+  };
+}
+
 function assertBookingDoesNotOverlap(bookings, candidateBooking, currentBookingId = null) {
   if (!isActiveBookingStatus(candidateBooking.status)) {
     return;
@@ -126,6 +134,13 @@ async function listBookings(searchTerm = '') {
   const bookings = (await readBookings()).map(normalizeBookingRecord);
   const filteredBookings = filterBookingsByGuestName(bookings, searchTerm);
   return sortBookings(filteredBookings);
+}
+
+async function listPublicAvailability() {
+  const bookings = (await readBookings()).map(normalizeBookingRecord);
+  return sortBookings(bookings)
+    .filter((booking) => isActiveBookingStatus(booking.status) && booking.bookingDate)
+    .map(toPublicAvailabilitySlot);
 }
 
 async function getBookingById(bookingId) {
@@ -226,5 +241,6 @@ module.exports = {
   deleteBooking,
   getBookingById,
   listBookings,
+  listPublicAvailability,
   updateBooking,
 };

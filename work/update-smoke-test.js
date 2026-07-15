@@ -6,6 +6,7 @@ async function run() {
   const created = await service.createBooking({
     guestName: 'Update Test',
     phoneNumber: '0700000006',
+    guestCount: 7,
     bookingDate: '2099-03-10',
     bookingPeriod: 'morning',
     bookingPrice: 150,
@@ -18,6 +19,7 @@ async function run() {
   const updated = await service.updateBooking(created.id, {
     guestName: 'Update Test Changed',
     phoneNumber: '0700000006',
+    guestCount: 9,
     bookingDate: '2099-03-10',
     bookingPeriod: 'evening',
     bookingPrice: 260,

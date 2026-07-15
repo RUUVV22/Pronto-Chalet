@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تقويم توفر شاليه برونتو</title>
+    <meta
+      name="description"
+      content="تقويم عام يعرض الأيام والفترات المتاحة والمحجوزة في شاليه برونتو بدون تفاصيل الحجز."
+    />
+    <meta name="theme-color" content="#202226" />
+    <link rel="preload" as="image" href="assets/NoBackLogo.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
+    <link rel="stylesheet" href="css/availability.css?v=public-availability-1" />
+  </head>
+  <body>
+    <div class="public-shell">
+      <header class="public-header panel">
+        <a class="public-brand" href="availability" aria-label="Pronto Chalet">
+          <img
+            class="public-logo"
+            src="assets/NoBackLogo.png"
+            alt="Pronto Chalet"
+            width="78"
+            height="78"
+            decoding="async"
+            fetchpriority="high"
+          />
+          <span>Pronto Chalet</span>
+        </a>
+
+        <span class="public-badge">التقويم العام</span>
+      </header>
+
+      <main class="availability-layout">
+        <section class="panel calendar-panel" aria-labelledby="calendarTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">التوفر والحجوزات</p>
+              <h1 id="calendarTitle">التقويم</h1>
+            </div>
+
+            <div class="calendar-actions">
+              <button id="prevMonthButton" class="ghost-button" type="button">الشهر السابق</button>
+              <button id="todayButton" class="ghost-button" type="button">اليوم</button>
+              <button id="nextMonthButton" class="ghost-button" type="button">الشهر التالي</button>
+            </div>
+          </div>
+
+          <div class="legend" aria-label="مفتاح حالات الأيام">
+            <span><i class="legend-swatch available"></i> متاح</span>
+            <span><i class="legend-swatch partial"></i> متاح جزئياً</span>
+            <span><i class="legend-swatch booked"></i> محجوز</span>
+          </div>
+
+          <p id="availabilityMessage" class="status-message" role="status" aria-live="polite"></p>
+
+          <div
+            id="availabilityGrid"
+            class="availability-grid"
+            aria-label="تقويم توفر الشاليه"
+          ></div>
+        </section>
+
+        <aside class="panel day-panel" aria-labelledby="selectedDayTitle">
+          <p class="eyebrow">حالة اليوم</p>
+          <h2 id="selectedDayTitle">اختر يوماً</h2>
+          <div id="selectedDayStatus" class="selected-day-status" aria-live="polite">
+            اختر أي يوم من التقويم لمعرفة حالة الفترة الصباحية والمسائية.
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="js/availability.js?v=public-availability-1"></script>
+  </body>
+</html>

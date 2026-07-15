@@ -1,0 +1,358 @@
+const ARABIC_LOCALE = 'ar-SA-u-ca-gregory';
+const PUBLIC_AVAILABILITY_COLLECTION = 'publicAvailability';
+const bookingPeriodOrder = ['morning', 'evening'];
+const weekdayLabels = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyDjmBwQn2i5S94g7lB5guDAfH9Wn8AhDlo',
+  authDomain: 'prontochalet-f75b6.firebaseapp.com',
+  projectId: 'prontochalet-f75b6',
+  storageBucket: 'prontochalet-f75b6.firebasestorage.app',
+  messagingSenderId: '107619810614',
+  appId: '1:107619810614:web:b3b1dad78a0a8c08054797',
+  measurementId: 'G-ZERN51SPDY',
+};
+
+const elements = {
+  availabilityGrid: document.getElementById('availabilityGrid'),
+  availabilityMessage: document.getElementById('availabilityMessage'),
+  calendarTitle: document.getElementById('calendarTitle'),
+  nextMonthButton: document.getElementById('nextMonthButton'),
+  prevMonthButton: document.getElementById('prevMonthButton'),
+  selectedDayStatus: document.getElementById('selectedDayStatus'),
+  selectedDayTitle: document.getElementById('selectedDayTitle'),
+  todayButton: document.getElementById('todayButton'),
+};
+
+const state = {
+  currentMonth: startOfMonth(new Date()),
+  selectedDate: '',
+  slotsByDate: new Map(),
+};
+
+function padNumber(value) {
+  return String(value).padStart(2, '0');
+}
+
+function startOfMonth(date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function formatDateInput(date) {
+  return [date.getFullYear(), padNumber(date.getMonth() + 1), padNumber(date.getDate())].join('-');
+}
+
+function getTodayString() {
+  return formatDateInput(new Date());
+}
+
+function formatPlainNumber(value) {
+  return new Intl.NumberFormat('ar-SA', { useGrouping: false }).format(value);
+}
+
+function formatMonthTitle(date) {
+  return `${formatPlainNumber(date.getMonth() + 1)} / ${formatPlainNumber(date.getFullYear())}`;
+}
+
+function parseDateInput(dateString) {
+  if (!dateString) {
+    return null;
+  }
+
+  const [year, month, day] = dateString.split('-').map(Number);
+
+  if (!year || !month || !day) {
+    return null;
+  }
+
+  const date = new Date(year, month - 1, day);
+
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return date;
+}
+
+function formatDateDisplay(dateString) {
+  const date = parseDateInput(dateString);
+
+  if (!date) {
+    return 'تاريخ غير صالح';
+  }
+
+  return new Intl.DateTimeFormat(ARABIC_LOCALE, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+}
+
+function setMessage(message, type = 'info') {
+  elements.availabilityMessage.textContent = message;
+  elements.availabilityMessage.dataset.type = type;
+}
+
+function clearMessage() {
+  elements.availabilityMessage.textContent = '';
+  delete elements.availabilityMessage.dataset.type;
+}
+
+function isLocalApiHost() {
+  return ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+}
+
+function normalizeSlot(rawSlot) {
+  const bookingDate = String(rawSlot && rawSlot.bookingDate ? rawSlot.bookingDate : '').trim();
+  const bookingPeriod = rawSlot && rawSlot.bookingPeriod === 'evening' ? 'evening' : 'morning';
+
+  if (!parseDateInput(bookingDate)) {
+    return null;
+  }
+
+  return {
+    bookingDate,
+    bookingPeriod,
+    status: 'booked',
+  };
+}
+
+function setAvailabilitySlots(slots) {
+  state.slotsByDate = new Map();
+
+  slots
+    .map(normalizeSlot)
+    .filter(Boolean)
+    .forEach((slot) => {
+      const daySlots = state.slotsByDate.get(slot.bookingDate) || new Set();
+      daySlots.add(slot.bookingPeriod);
+      state.slotsByDate.set(slot.bookingDate, daySlots);
+    });
+}
+
+function getBookedPeriods(dateString) {
+  return state.slotsByDate.get(dateString) || new Set();
+}
+
+function getDayStatus(dateString) {
+  const bookedPeriods = getBookedPeriods(dateString);
+  const bookedCount = bookedPeriods.size;
+
+  if (bookedCount >= bookingPeriodOrder.length) {
+    return {
+      className: 'booked',
+      label: 'محجوز',
+    };
+  }
+
+  if (bookedCount > 0) {
+    return {
+      className: 'partial',
+      label: 'متاح جزئياً',
+    };
+  }
+
+  return {
+    className: 'available',
+    label: 'متاح',
+  };
+}
+
+function getPeriodLabel(period) {
+  return period === 'evening' ? 'الفترة المسائية' : 'الفترة الصباحية';
+}
+
+function renderLoadingCalendar() {
+  const cells = weekdayLabels.map((weekday) => `<div class="calendar-weekday">${weekday}</div>`);
+
+  for (let index = 0; index < 21; index += 1) {
+    cells.push(`
+      <div class="calendar-day available" aria-hidden="true">
+        <span class="skeleton-line short"></span>
+        <span class="skeleton-line medium"></span>
+        <span class="skeleton-line"></span>
+      </div>
+    `);
+  }
+
+  elements.availabilityGrid.classList.add('loading-grid');
+  elements.availabilityGrid.innerHTML = cells.join('');
+}
+
+function renderCalendar() {
+  const monthStart = startOfMonth(state.currentMonth);
+  const year = monthStart.getFullYear();
+  const month = monthStart.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayIndex = (monthStart.getDay() + 1) % 7;
+  const totalCells = Math.ceil((firstDayIndex + daysInMonth) / 7) * 7;
+  const todayString = getTodayString();
+  const cells = [];
+
+  elements.calendarTitle.textContent = formatMonthTitle(monthStart);
+  elements.availabilityGrid.classList.remove('loading-grid');
+
+  weekdayLabels.forEach((weekday) => {
+    cells.push(`<div class="calendar-weekday">${weekday}</div>`);
+  });
+
+  for (let index = 0; index < totalCells; index += 1) {
+    const dayNumber = index - firstDayIndex + 1;
+
+    if (index < firstDayIndex || dayNumber > daysInMonth) {
+      cells.push('<div class="calendar-day empty" aria-hidden="true"></div>');
+      continue;
+    }
+
+    const dateString = formatDateInput(new Date(year, month, dayNumber));
+    const status = getDayStatus(dateString);
+    const dayClasses = ['calendar-day', status.className];
+    const bookedPeriods = getBookedPeriods(dateString);
+    const slotSummary = bookingPeriodOrder
+      .map((period) => `${getPeriodLabel(period)}: ${bookedPeriods.has(period) ? 'محجوز' : 'متاح'}`)
+      .join('<br />');
+
+    if (dateString === todayString) {
+      dayClasses.push('today');
+    }
+
+    if (dateString === state.selectedDate) {
+      dayClasses.push('selected');
+    }
+
+    cells.push(`
+      <button class="${dayClasses.join(' ')}" type="button" data-date="${dateString}">
+        <span class="day-number">${formatPlainNumber(dayNumber)}</span>
+        <span class="day-label ${status.className}">${status.label}</span>
+        <span class="day-slots">${slotSummary}</span>
+      </button>
+    `);
+  }
+
+  elements.availabilityGrid.innerHTML = cells.join('');
+}
+
+function renderSelectedDay() {
+  if (!state.selectedDate) {
+    elements.selectedDayTitle.textContent = 'اختر يوماً';
+    elements.selectedDayStatus.textContent =
+      'اختر أي يوم من التقويم لمعرفة حالة الفترة الصباحية والمسائية.';
+    return;
+  }
+
+  const bookedPeriods = getBookedPeriods(state.selectedDate);
+  const statusRows = bookingPeriodOrder
+    .map((period) => {
+      const isBooked = bookedPeriods.has(period);
+
+      return `
+        <div class="slot-status">
+          <strong>${getPeriodLabel(period)}</strong>
+          <span class="slot-pill ${isBooked ? 'booked' : 'available'}">
+            ${isBooked ? 'محجوز' : 'متاح'}
+          </span>
+        </div>
+      `;
+    })
+    .join('');
+
+  elements.selectedDayTitle.textContent = formatDateDisplay(state.selectedDate);
+  elements.selectedDayStatus.innerHTML = statusRows;
+}
+
+async function loadAvailabilityFromApi() {
+  const response = await fetch('/api/public/availability', {
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  const contentType = response.headers.get('content-type') || '';
+
+  if (!response.ok || !contentType.includes('application/json')) {
+    throw new Error('Local public availability API is not available.');
+  }
+
+  const payload = await response.json();
+  return Array.isArray(payload.data) ? payload.data : [];
+}
+
+async function loadAvailabilityFromFirestore() {
+  const [{ getApps, initializeApp }, firestore] = await Promise.all([
+    import('https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js'),
+  ]);
+  const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+  const db = firestore.getFirestore(app);
+  const snapshot = await firestore.getDocs(firestore.collection(db, PUBLIC_AVAILABILITY_COLLECTION));
+
+  return snapshot.docs.map((slotDocument) => slotDocument.data());
+}
+
+async function loadAvailability() {
+  renderLoadingCalendar();
+  setMessage('جاري تحميل التقويم...');
+
+  const loaders = isLocalApiHost()
+    ? [loadAvailabilityFromApi, loadAvailabilityFromFirestore]
+    : [loadAvailabilityFromFirestore, loadAvailabilityFromApi];
+  let lastError = null;
+
+  for (const loader of loaders) {
+    try {
+      const slots = await loader();
+      setAvailabilitySlots(slots);
+      clearMessage();
+      renderCalendar();
+      renderSelectedDay();
+      return;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  setAvailabilitySlots([]);
+  renderCalendar();
+  renderSelectedDay();
+  setMessage('تعذر تحميل التقويم حالياً. حاول مرة أخرى لاحقاً.', 'error');
+  console.error('Availability load failed:', lastError);
+}
+
+function updateMonth(offset) {
+  state.currentMonth = new Date(
+    state.currentMonth.getFullYear(),
+    state.currentMonth.getMonth() + offset,
+    1
+  );
+  renderCalendar();
+}
+
+function jumpToToday() {
+  state.currentMonth = startOfMonth(new Date());
+  state.selectedDate = getTodayString();
+  renderCalendar();
+  renderSelectedDay();
+}
+
+function bindEvents() {
+  elements.prevMonthButton.addEventListener('click', () => updateMonth(-1));
+  elements.nextMonthButton.addEventListener('click', () => updateMonth(1));
+  elements.todayButton.addEventListener('click', jumpToToday);
+  elements.availabilityGrid.addEventListener('click', (event) => {
+    const dayButton = event.target.closest('button[data-date]');
+
+    if (!dayButton) {
+      return;
+    }
+
+    state.selectedDate = dayButton.dataset.date;
+    renderCalendar();
+    renderSelectedDay();
+  });
+}
+
+bindEvents();
+loadAvailability();

@@ -1,7 +1,9 @@
 const assert = require('assert');
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
 async function run() {
-  const response = await fetch('http://localhost:3000/');
+  const response = await fetch(`${BASE_URL}/`);
   const html = await response.text();
 
   assert.strictEqual(response.status, 200);
@@ -12,8 +14,17 @@ async function run() {
   assert.ok(html.includes('حجز صباحي'));
   assert.ok(html.includes('حجز مسائي'));
   assert.ok(html.includes('الرعبون'));
+  assert.ok(html.includes('التقويم العام'));
 
-  const cssResponse = await fetch('http://localhost:3000/css/styles.css');
+  const availabilityResponse = await fetch(`${BASE_URL}/availability`);
+  const availabilityHtml = await availabilityResponse.text();
+
+  assert.strictEqual(availabilityResponse.status, 200);
+  assert.ok(availabilityHtml.includes('تقويم توفر شاليه برونتو'));
+  assert.ok(availabilityHtml.includes('availabilityGrid'));
+  assert.ok(!availabilityHtml.includes('loginForm'));
+
+  const cssResponse = await fetch(`${BASE_URL}/css/styles.css`);
   const css = await cssResponse.text();
 
   assert.strictEqual(cssResponse.status, 200);
@@ -22,12 +33,20 @@ async function run() {
   assert.ok(css.includes('.segmented-field'));
   assert.ok(css.includes('.price-summary'));
 
+  const availabilityCssResponse = await fetch(`${BASE_URL}/css/availability.css`);
+  const availabilityCss = await availabilityCssResponse.text();
+
+  assert.strictEqual(availabilityCssResponse.status, 200);
+  assert.ok(availabilityCss.includes('.availability-grid'));
+  assert.ok(availabilityCss.includes('.slot-pill'));
+
   console.log(
     JSON.stringify(
       {
         arabicHtml: true,
         responsiveCss: true,
         newBookingFields: true,
+        publicAvailabilityPage: true,
       },
       null,
       2

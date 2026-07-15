@@ -28,8 +28,11 @@ const STATIC_STORAGE_KEY = 'pronto-chalet-static-store-v1';
 const STATIC_SESSION_KEY = 'pronto-chalet-static-session-v1';
 const ARABIC_LOCALE = 'ar-SA-u-ca-gregory';
 const PHONE_NUMBER_MAX_LENGTH = 10;
+const CALENDAR_LOADING_CELLS = 14;
+const TABLE_LOADING_ROWS = 4;
 const BOOKINGS_COLLECTION = 'bookings';
 const ADMINS_COLLECTION = 'admins';
+const PUBLIC_AVAILABILITY_COLLECTION = 'publicAvailability';
 const BOOTSTRAP_ADMIN_EMAILS = new Set(['islamalawneh4@gmail.com']);
 
 const firebaseConfig = {
@@ -135,17 +138,23 @@ const state = {
   user: null,
 };
 
+let searchRenderFrame = 0;
+
 // Cache DOM references once so the rest of the file can stay focused on state updates.
 const elements = {
+  appLoadingOverlay: document.getElementById('appLoadingOverlay'),
+  appLoadingIndicator: document.getElementById('appLoadingIndicator'),
   authView: document.getElementById('authView'),
   setupPanel: document.getElementById('setupPanel'),
   loginPanel: document.getElementById('loginPanel'),
   setupForm: document.getElementById('setupForm'),
+  setupSubmitButton: document.querySelector('#setupForm button[type="submit"]'),
   setupUsername: document.getElementById('setupUsername'),
   setupPassword: document.getElementById('setupPassword'),
   setupConfirmPassword: document.getElementById('setupConfirmPassword'),
   setupMessage: document.getElementById('setupMessage'),
   loginForm: document.getElementById('loginForm'),
+  loginSubmitButton: document.querySelector('#loginForm button[type="submit"]'),
   loginUsername: document.getElementById('loginUsername'),
   loginPassword: document.getElementById('loginPassword'),
   loginMessage: document.getElementById('loginMessage'),
@@ -198,6 +207,7 @@ const elements = {
   bookingConflictMessage: document.getElementById('bookingConflictMessage'),
   closeBookingConflictButton: document.getElementById('closeBookingConflictButton'),
   createAccountForm: document.getElementById('createAccountForm'),
+  createAccountSubmitButton: document.querySelector('#createAccountForm button[type="submit"]'),
   createUsername: document.getElementById('createUsername'),
   createPassword: document.getElementById('createPassword'),
   createConfirmPassword: document.getElementById('createConfirmPassword'),
@@ -206,6 +216,7 @@ const elements = {
   newPassword: document.getElementById('newPassword'),
   confirmNewPassword: document.getElementById('confirmNewPassword'),
   changePasswordForm: document.getElementById('changePasswordForm'),
+  changePasswordSubmitButton: document.querySelector('#changePasswordForm button[type="submit"]'),
   changePasswordMessage: document.getElementById('changePasswordMessage'),
 };
 
@@ -801,6 +812,78 @@ function findOverlappingBooking(candidateBooking, currentBookingId = null) {
   });
 }
 
+function isPubliclyBooked(booking) {
+  return Boolean(
+    booking &&
+      isActiveStatus(booking.status) &&
+      getBookingDate(booking) &&
+      getBookingPeriod(booking)
+  );
+}
+
+function getPublicAvailabilitySlotId(booking) {
+  return `${getBookingDate(booking)}_${getBookingPeriod(booking)}`;
+}
+
+function getPublicAvailabilitySlotPayload(booking) {
+  return {
+    bookingDate: getBookingDate(booking),
+    bookingPeriod: getBookingPeriod(booking),
+    status: 'booked',
+    updatedAt: serverTimestamp(),
+  };
+}
+
+async function syncFirebasePublicAvailabilitySlot(nextBooking = null, previousBooking = null) {
+  const previousSlotId = isPubliclyBooked(previousBooking)
+    ? getPublicAvailabilitySlotId(previousBooking)
+    : '';
+  const nextSlotId = isPubliclyBooked(nextBooking) ? getPublicAvailabilitySlotId(nextBooking) : '';
+  const writes = [];
+
+  if (previousSlotId && previousSlotId !== nextSlotId) {
+    writes.push(
+      deleteDoc(doc(firestoreDb, PUBLIC_AVAILABILITY_COLLECTION, previousSlotId))
+    );
+  }
+
+  if (nextSlotId) {
+    writes.push(
+      setDoc(
+        doc(firestoreDb, PUBLIC_AVAILABILITY_COLLECTION, nextSlotId),
+        getPublicAvailabilitySlotPayload(nextBooking)
+      )
+    );
+  }
+
+  await Promise.all(writes);
+}
+
+async function syncFirebasePublicAvailabilityCollection(bookings) {
+  const desiredSlots = new Map();
+
+  bookings.forEach((booking) => {
+    if (isPubliclyBooked(booking)) {
+      desiredSlots.set(getPublicAvailabilitySlotId(booking), getPublicAvailabilitySlotPayload(booking));
+    }
+  });
+
+  const currentSnapshot = await getDocs(collection(firestoreDb, PUBLIC_AVAILABILITY_COLLECTION));
+  const writes = [];
+
+  currentSnapshot.docs.forEach((publicSlotDocument) => {
+    if (!desiredSlots.has(publicSlotDocument.id)) {
+      writes.push(deleteDoc(publicSlotDocument.ref));
+    }
+  });
+
+  desiredSlots.forEach((payload, slotId) => {
+    writes.push(setDoc(doc(firestoreDb, PUBLIC_AVAILABILITY_COLLECTION, slotId), payload));
+  });
+
+  await Promise.all(writes);
+}
+
 function getBookingConflictMessage(conflictBooking = null) {
   const guestName = conflictBooking && conflictBooking.guestName
     ? ` للضيف ${conflictBooking.guestName}`
@@ -860,6 +943,106 @@ function setFormMessage(element, message, type = 'info') {
   }
 
   setMessage(element, message, type);
+}
+
+function setButtonLoading(button, isLoading) {
+  if (!button) {
+    return;
+  }
+
+  button.classList.toggle('is-loading', isLoading);
+  button.disabled = isLoading;
+
+  if (isLoading) {
+    button.setAttribute('aria-busy', 'true');
+    return;
+  }
+
+  button.removeAttribute('aria-busy');
+}
+
+function setPanelLoading(panel, isLoading) {
+  if (!panel) {
+    return;
+  }
+
+  panel.classList.toggle('is-loading-panel', isLoading);
+
+  if (isLoading) {
+    panel.setAttribute('aria-busy', 'true');
+    return;
+  }
+
+  panel.removeAttribute('aria-busy');
+}
+
+function setAppLoading(isLoading) {
+  elements.appLoadingOverlay.classList.toggle('hidden', !isLoading);
+  elements.appLoadingIndicator.classList.toggle('hidden', !isLoading);
+  elements.appLoadingIndicator.setAttribute('aria-hidden', String(!isLoading));
+  document.body.classList.toggle('app-is-loading', isLoading);
+}
+
+function renderTableLoading() {
+  const rows = Array.from({ length: TABLE_LOADING_ROWS }, () => `
+    <span class="table-loading-row">
+      <span class="skeleton-line"></span>
+      <span class="skeleton-line medium"></span>
+      <span class="skeleton-line short"></span>
+    </span>
+  `).join('');
+
+  elements.bookingsTableBody.innerHTML = `
+    <tr>
+      <td class="table-empty loading-cell" colspan="8">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <span class="table-loading-shell" aria-hidden="true">${rows}</span>
+      </td>
+    </tr>
+  `;
+}
+
+function renderCalendarLoading() {
+  const cells = weekdayLabels.map((weekday) => `<div class="calendar-weekday">${weekday}</div>`);
+
+  for (let index = 0; index < CALENDAR_LOADING_CELLS; index += 1) {
+    cells.push(`
+      <div class="calendar-day loading" aria-hidden="true">
+        <span class="skeleton-line"></span>
+        <span class="skeleton-line medium"></span>
+        <span class="skeleton-line short"></span>
+      </div>
+    `);
+  }
+
+  elements.calendarGrid.innerHTML = cells.join('');
+  elements.selectedDateDetails.innerHTML = `
+    <div class="date-details-empty loading-inline">
+      <span class="loading-spinner" aria-hidden="true"></span>
+    </div>
+  `;
+}
+
+function setBookingsLoading(isLoading) {
+  setPanelLoading(elements.calendarPanel, isLoading);
+  setPanelLoading(elements.tablePanel, isLoading);
+  setPanelLoading(elements.statsSection, isLoading);
+
+  if (isLoading) {
+    renderTableLoading();
+    renderCalendarLoading();
+  }
+}
+
+function queueTableRender() {
+  if (searchRenderFrame) {
+    window.cancelAnimationFrame(searchRenderFrame);
+  }
+
+  searchRenderFrame = window.requestAnimationFrame(() => {
+    searchRenderFrame = 0;
+    renderTable();
+  });
 }
 
 function showView(viewName) {
@@ -1640,7 +1823,15 @@ async function firebaseApiRequest(url, options = {}) {
 
   if (path === API_BASE && method === 'GET') {
     await requireFirebaseAdmin();
-    return { data: await readFirebaseBookings() };
+    const bookings = await readFirebaseBookings();
+
+    try {
+      await syncFirebasePublicAvailabilityCollection(bookings);
+    } catch (error) {
+      console.warn('Public availability sync failed:', error);
+    }
+
+    return { data: bookings };
   }
 
   if (path === API_BASE && method === 'POST') {
@@ -1659,6 +1850,8 @@ async function firebaseApiRequest(url, options = {}) {
       createdAt: now,
       updatedAt: now,
     };
+
+    await syncFirebasePublicAvailabilitySlot(booking);
 
     return {
       message: 'تم إنشاء الحجز بنجاح.',
@@ -1685,19 +1878,24 @@ async function firebaseApiRequest(url, options = {}) {
       });
       await assertFirebaseBookingDoesNotOverlap(payload, bookingId);
       await updateDoc(bookingReference, getFirebaseBookingWritePayload(payload));
+      const updatedBooking = {
+        ...currentBooking,
+        ...payload,
+        updatedAt: new Date().toISOString(),
+      };
+
+      await syncFirebasePublicAvailabilitySlot(updatedBooking, currentBooking);
 
       return {
         message: 'تم تحديث الحجز بنجاح.',
-        data: {
-          ...currentBooking,
-          ...payload,
-          updatedAt: new Date().toISOString(),
-        },
+        data: updatedBooking,
       };
     }
 
     if (method === 'DELETE') {
       await deleteDoc(bookingReference);
+      await syncFirebasePublicAvailabilitySlot(null, currentBooking);
+
       return {
         message: 'تم حذف الحجز بنجاح.',
         data: currentBooking,
@@ -2334,11 +2532,7 @@ async function loadBookings() {
     return;
   }
 
-  elements.bookingsTableBody.innerHTML = `
-    <tr>
-      <td class="table-empty" colspan="8">جارٍ تحميل الحجوزات...</td>
-    </tr>
-  `;
+  setBookingsLoading(true);
 
   try {
     const payload = await apiRequest(API_BASE, { method: 'GET' });
@@ -2354,6 +2548,8 @@ async function loadBookings() {
         <td class="table-empty" colspan="8">${escapeHtml(error.message)}</td>
       </tr>
     `;
+  } finally {
+    setBookingsLoading(false);
   }
 }
 
@@ -2388,6 +2584,7 @@ function buildAuthPayload(usernameInput, passwordInput, confirmInput = null) {
 async function submitSetupForm(event) {
   event.preventDefault();
   setFormMessage(elements.setupMessage, '');
+  setButtonLoading(elements.setupSubmitButton, true);
 
   try {
     const payload = buildAuthPayload(
@@ -2414,12 +2611,15 @@ async function submitSetupForm(event) {
   } catch (error) {
     const validationError = formatValidationErrors(error.data && error.data.errors);
     setFormMessage(elements.setupMessage, validationError || error.message, 'error');
+  } finally {
+    setButtonLoading(elements.setupSubmitButton, false);
   }
 }
 
 async function submitLoginForm(event) {
   event.preventDefault();
   setFormMessage(elements.loginMessage, '');
+  setButtonLoading(elements.loginSubmitButton, true);
 
   try {
     const payload = buildAuthPayload(elements.loginUsername, elements.loginPassword);
@@ -2442,10 +2642,14 @@ async function submitLoginForm(event) {
   } catch (error) {
     const validationError = formatValidationErrors(error.data && error.data.errors);
     setFormMessage(elements.loginMessage, validationError || error.message, 'error');
+  } finally {
+    setButtonLoading(elements.loginSubmitButton, false);
   }
 }
 
 async function submitLogout() {
+  setButtonLoading(elements.logoutButton, true);
+
   try {
     await apiRequest(`${AUTH_BASE}/logout`, { method: 'POST' });
   } catch (error) {
@@ -2464,12 +2668,15 @@ async function submitLogout() {
     syncAuthPanels();
     showView('auth');
     setFormMessage(elements.loginMessage, 'تم تسجيل الخروج بنجاح.', 'success');
+    setButtonLoading(elements.logoutButton, false);
   }
 }
 
 async function submitBooking(event) {
   event.preventDefault();
   setFormMessage(elements.bookingMessage, '');
+  setButtonLoading(elements.submitButton, true);
+  setPanelLoading(elements.bookingPanel, true);
 
   const isEditing = Boolean(state.editingBookingId);
   const endpoint = isEditing ? `${API_BASE}/${state.editingBookingId}` : API_BASE;
@@ -2520,10 +2727,13 @@ async function submitBooking(event) {
 
     const validationError = formatValidationErrors(error.data && error.data.errors);
     setFormMessage(elements.bookingMessage, validationError || error.message, 'error');
+  } finally {
+    setPanelLoading(elements.bookingPanel, false);
+    setButtonLoading(elements.submitButton, false);
   }
 }
 
-async function deleteBooking(bookingId) {
+async function deleteBooking(bookingId, triggerButton = null) {
   const booking = state.bookings.find((item) => item.id === bookingId);
   const confirmed = window.confirm(
     `هل تريد حذف حجز ${booking ? booking.guestName : 'هذا الضيف'}؟`
@@ -2532,6 +2742,9 @@ async function deleteBooking(bookingId) {
   if (!confirmed) {
     return;
   }
+
+  setButtonLoading(triggerButton, true);
+  setPanelLoading(elements.tablePanel, true);
 
   try {
     const result = await apiRequest(`${API_BASE}/${bookingId}`, { method: 'DELETE' });
@@ -2542,6 +2755,9 @@ async function deleteBooking(bookingId) {
     await loadBookings();
   } catch (error) {
     setFormMessage(elements.managementMessage, error.message, 'error');
+  } finally {
+    setPanelLoading(elements.tablePanel, false);
+    setButtonLoading(triggerButton, false);
   }
 }
 
@@ -2573,7 +2789,7 @@ function handleTableClick(event) {
   }
 
   if (button.dataset.action === 'delete') {
-    deleteBooking(bookingId);
+    deleteBooking(bookingId, button);
   }
 }
 
@@ -2637,6 +2853,7 @@ function resetAccountMessages() {
 async function submitCreateAccountForm(event) {
   event.preventDefault();
   setFormMessage(elements.createAccountMessage, '');
+  setButtonLoading(elements.createAccountSubmitButton, true);
 
   try {
     const payload = buildAuthPayload(
@@ -2654,12 +2871,15 @@ async function submitCreateAccountForm(event) {
   } catch (error) {
     const validationError = formatValidationErrors(error.data && error.data.errors);
     setFormMessage(elements.createAccountMessage, validationError || error.message, 'error');
+  } finally {
+    setButtonLoading(elements.createAccountSubmitButton, false);
   }
 }
 
 async function submitChangePasswordForm(event) {
   event.preventDefault();
   setFormMessage(elements.changePasswordMessage, '');
+  setButtonLoading(elements.changePasswordSubmitButton, true);
 
   try {
     const payload = {
@@ -2677,6 +2897,8 @@ async function submitChangePasswordForm(event) {
   } catch (error) {
     const validationError = formatValidationErrors(error.data && error.data.errors);
     setFormMessage(elements.changePasswordMessage, validationError || error.message, 'error');
+  } finally {
+    setButtonLoading(elements.changePasswordSubmitButton, false);
   }
 }
 
@@ -2712,7 +2934,7 @@ function bindEvents() {
   elements.calendarGrid.addEventListener('click', handleCalendarClick);
   elements.searchInput.addEventListener('input', (event) => {
     state.searchTerm = event.target.value;
-    renderTable();
+    queueTableRender();
   });
   elements.bookingPeriodRadios.forEach((radio) => {
     radio.addEventListener('change', updateBookingFormSummaries);
@@ -2758,7 +2980,13 @@ async function bootstrap() {
   registerServiceWorker();
   bindEvents();
   initializeDashboardState();
-  await loadAuthStatus();
+  setAppLoading(true);
+
+  try {
+    await loadAuthStatus();
+  } finally {
+    setAppLoading(false);
+  }
 }
 
 bootstrap();

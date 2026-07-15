@@ -83,9 +83,56 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .app-shell {
   width: min(1440px, calc(100% - 32px));
   margin: 20px auto 36px;
+  display: grid;
+  gap: 24px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-logo {
+  width: clamp(56px, 8vw, 78px);
+  height: clamp(56px, 8vw, 78px);
+  flex: 0 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(74, 49, 27, 0.14));
+}
+
+.app-brand-name {
+  color: var(--brand-strong);
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.app-header-loader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
 }
 
 .panel,
@@ -299,10 +346,16 @@ button {
 .secondary-button,
 .ghost-button,
 .row-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   border: 0;
   border-radius: 999px;
   padding: 11px 16px;
   font-weight: 700;
+  line-height: 1.2;
   transition:
     transform var(--transition),
     box-shadow var(--transition),
@@ -324,6 +377,7 @@ button {
 .ghost-button {
   background: rgba(71, 107, 93, 0.1);
   color: var(--accent);
+  text-decoration: none;
 }
 
 .row-button {
@@ -338,6 +392,74 @@ button {
 .ghost-button:hover,
 .row-button:hover {
   transform: translateY(-1px);
+}
+
+.primary-button.is-loading:hover,
+.secondary-button.is-loading:hover,
+.ghost-button.is-loading:hover,
+.row-button.is-loading:hover {
+  transform: none;
+}
+
+.primary-button.is-loading::before,
+.secondary-button.is-loading::before,
+.ghost-button.is-loading::before,
+.row-button.is-loading::before {
+  content: "";
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-inline-start-color: transparent;
+  border-radius: 999px;
+  animation: spin 780ms linear infinite;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(138, 79, 45, 0.18);
+  border-top-color: var(--brand);
+  border-radius: 999px;
+  animation: spin 800ms linear infinite;
+}
+
+.app-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 250, 244, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.app-loading-spinner {
+  width: 54px;
+  height: 54px;
+  border-width: 5px;
+  box-shadow: 0 18px 40px rgba(74, 49, 27, 0.14);
+}
+
+.is-loading-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.is-loading-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 250, 244, 0.12),
+    rgba(255, 250, 244, 0.46),
+    rgba(255, 250, 244, 0.12)
+  );
+  background-size: 220% 100%;
+  pointer-events: none;
+  animation: shimmer 1.15s ease-in-out infinite;
 }
 
 .hidden {
@@ -379,6 +501,14 @@ button {
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+.topbar-logo {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(74, 49, 27, 0.14));
 }
 
 .brand-badge {
@@ -634,6 +764,13 @@ button {
 .date-details-empty {
   color: var(--muted);
   line-height: 1.6;
+}
+
+.loading-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
 }
 
 .date-details-header {
@@ -902,6 +1039,63 @@ tbody tr:hover {
   padding: 36px 12px;
 }
 
+.loading-cell {
+  padding: 26px 18px;
+}
+
+.loading-cell > .loading-spinner {
+  margin-bottom: 16px;
+}
+
+.table-loading-shell {
+  display: grid;
+  gap: 14px;
+  width: min(620px, 100%);
+  margin: 0 auto;
+}
+
+.table-loading-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.7fr) minmax(140px, 1fr) minmax(90px, 0.5fr);
+  gap: 12px;
+}
+
+.skeleton-line {
+  display: block;
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(138, 79, 45, 0.08),
+      rgba(138, 79, 45, 0.18),
+      rgba(138, 79, 45, 0.08)
+    );
+  background-size: 220% 100%;
+  animation: shimmer 1.15s ease-in-out infinite;
+}
+
+.skeleton-line.short {
+  width: 48%;
+}
+
+.skeleton-line.medium {
+  width: 72%;
+}
+
+.calendar-day.loading {
+  pointer-events: none;
+}
+
+.calendar-day.loading .skeleton-line {
+  height: 10px;
+}
+
+.calendar-day.loading .skeleton-line:first-child {
+  width: 34px;
+}
+
 .modal {
   position: fixed;
   inset: 0;
@@ -987,6 +1181,22 @@ tbody tr:hover {
   min-width: 128px;
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 120% 0;
+  }
+
+  100% {
+    background-position: -120% 0;
+  }
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -1016,6 +1226,11 @@ tbody tr:hover {
     width: min(100%, calc(100% - 18px));
     margin-top: 10px;
     margin-bottom: 18px;
+    gap: 18px;
+  }
+
+  .app-header {
+    padding: 12px 16px;
   }
 
   .panel,
@@ -1069,6 +1284,19 @@ tbody tr:hover {
 }
 
 @media (max-width: 600px) {
+  .app-header {
+    align-items: flex-start;
+  }
+
+  .app-brand-name {
+    white-space: normal;
+  }
+
+  .topbar-logo {
+    width: 48px;
+    height: 48px;
+  }
+
   .management-nav {
     grid-template-columns: 1fr;
   }
@@ -1113,5 +1341,20 @@ tbody tr:hover {
 
   .slot-detail dd {
     text-align: right;
+  }
+
+  .table-loading-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
   }
 }

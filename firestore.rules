@@ -23,6 +23,26 @@ service cloud.firestore {
       allow read, create, update, delete: if isAdmin();
     }
 
+    function isPublicAvailabilitySlot() {
+      return request.resource.data.keys().hasOnly([
+        'bookingDate',
+        'bookingPeriod',
+        'status',
+        'updatedAt'
+      ]) &&
+        request.resource.data.bookingDate is string &&
+        request.resource.data.bookingDate.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+        request.resource.data.bookingPeriod in ['morning', 'evening'] &&
+        request.resource.data.status == 'booked' &&
+        request.resource.data.updatedAt is timestamp;
+    }
+
+    match /publicAvailability/{slotId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isPublicAvailabilitySlot();
+      allow delete: if isAdmin();
+    }
+
     match /admins/{uid} {
       allow get: if (isSignedIn() && request.auth.uid == uid) || isAdmin();
       allow list: if isAdmin();

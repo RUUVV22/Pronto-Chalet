@@ -15,13 +15,43 @@
     <meta name="apple-mobile-web-app-title" content="Pronto Chalet" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="preload" as="image" href="assets/NoBackLogo.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
-    <link rel="stylesheet" href="css/styles.css?v=booking-slots-5" />
+    <link rel="stylesheet" href="css/styles.css?v=loading-logo-1" />
   </head>
   <body>
     <div class="app-shell">
+      <header class="app-header panel" aria-label="Pronto Chalet">
+        <a class="app-brand" href="/" aria-label="Pronto Chalet">
+          <img
+            class="app-logo"
+            src="assets/NoBackLogo.png"
+            alt="Pronto Chalet"
+            width="72"
+            height="72"
+            decoding="async"
+            fetchpriority="high"
+          />
+          <span class="app-brand-name">Pronto Chalet</span>
+        </a>
+
+        <div id="appLoadingIndicator" class="app-header-loader hidden" aria-hidden="true">
+          <span class="loading-spinner" aria-hidden="true"></span>
+        </div>
+      </header>
+
+      <div
+        id="appLoadingOverlay"
+        class="app-loading-overlay hidden"
+        role="status"
+        aria-live="polite"
+        aria-label="Loading"
+      >
+        <span class="loading-spinner app-loading-spinner" aria-hidden="true"></span>
+      </div>
+
       <section id="authView" class="auth-view">
         <div class="auth-forms">
           <article id="setupPanel" class="panel auth-card hidden">
@@ -86,7 +116,16 @@
       <section id="dashboardView" class="dashboard-view hidden">
         <header class="topbar panel">
           <div class="brand-block">
-            <span class="brand-badge">خاص</span>
+            <img
+              class="topbar-logo"
+              src="assets/NoBackLogo.png"
+              alt=""
+              width="54"
+              height="54"
+              loading="lazy"
+              decoding="async"
+              aria-hidden="true"
+            />
             <div>
               <p class="eyebrow">لوحة التحكم</p>
               <h2 id="currentUserLabel">مرحبًا</h2>
@@ -94,6 +133,7 @@
           </div>
 
           <div class="topbar-actions">
+            <a class="ghost-button" href="availability" target="_blank" rel="noopener">التقويم العام</a>
             <button id="accountButton" class="ghost-button" type="button">إدارة الحساب</button>
             <button id="logoutButton" class="secondary-button" type="button">تسجيل الخروج</button>
           </div>
@@ -462,6 +502,6 @@
       </section>
     </div>
 
-    <script type="module" src="js/app.js?v=firebase-2"></script>
+    <script type="module" src="js/app.js?v=loading-logo-1"></script>
   </body>
 </html>

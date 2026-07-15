@@ -1,10 +1,13 @@
-const CACHE_NAME = 'pronto-chalet-firebase-v2';
+const CACHE_NAME = 'pronto-chalet-loading-logo-v1';
 
 const APP_SHELL = [
   './',
   'index.html',
-  'css/styles.css?v=booking-slots-5',
-  'js/app.js?v=firebase-2',
+  'availability.html',
+  'css/styles.css?v=loading-logo-1',
+  'css/availability.css?v=public-availability-1',
+  'js/app.js?v=loading-logo-1',
+  'js/availability.js?v=public-availability-1',
   'assets/NoBackLogo.png',
   'manifest.webmanifest',
   'icons/icon-192.png',
