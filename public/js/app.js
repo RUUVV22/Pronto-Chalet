@@ -703,6 +703,10 @@ function dataUrlToBytes(dataUrl) {
   return bytes;
 }
 
+function escapePdfLiteralString(value) {
+  return String(value).replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+}
+
 function createPdfBlobFromJpeg(jpegBytes, imageWidth, imageHeight) {
   const encoder = new TextEncoder();
   const parts = [];
@@ -727,7 +731,9 @@ function createPdfBlobFromJpeg(jpegBytes, imageWidth, imageHeight) {
 
   // This small PDF writer embeds the canvas JPEG as one full-page image.
   addPart('%PDF-1.4\n');
-  addObject(1, ['<< /Type /Catalog /Pages 2 0 R >>']);
+  addObject(1, [
+    '<< /Type /Catalog /Pages 2 0 R /ViewerPreferences << /DisplayDocTitle true >> >>',
+  ]);
   addObject(2, ['<< /Type /Pages /Kids [3 0 R] /Count 1 >>']);
   addObject(3, [
     `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${receiptPage.pdfWidth} ${receiptPage.pdfHeight}] `,
@@ -744,15 +750,19 @@ function createPdfBlobFromJpeg(jpegBytes, imageWidth, imageHeight) {
     imageDrawCommand,
     '\nendstream',
   ]);
+  addObject(6, [
+    `<< /Title (${escapePdfLiteralString('Pronto Chalet Booking Receipt')}) `,
+    `/Producer (${escapePdfLiteralString('Pronto Chalet Admin')}) >>`,
+  ]);
 
   const xrefOffset = byteOffset;
-  addPart('xref\n0 6\n0000000000 65535 f \n');
+  addPart('xref\n0 7\n0000000000 65535 f \n');
 
-  for (let objectNumber = 1; objectNumber <= 5; objectNumber += 1) {
+  for (let objectNumber = 1; objectNumber <= 6; objectNumber += 1) {
     addPart(`${String(offsets[objectNumber]).padStart(10, '0')} 00000 n \n`);
   }
 
-  addPart(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
+  addPart(`trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
 
   return new Blob(parts, { type: 'application/pdf' });
 }
@@ -773,10 +783,39 @@ function downloadBlob(blob, fileName) {
 
   link.href = objectUrl;
   link.download = fileName;
+  link.rel = 'noopener';
   document.body.appendChild(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(objectUrl);
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+}
+
+async function sharePdfFileWithoutLink(blob, fileName) {
+  if (
+    typeof File !== 'function' ||
+    typeof navigator === 'undefined' ||
+    !navigator.share ||
+    !navigator.canShare
+  ) {
+    return false;
+  }
+
+  const pdfFile = new File([blob], fileName, { type: 'application/pdf' });
+
+  try {
+    if (!navigator.canShare({ files: [pdfFile] })) {
+      return false;
+    }
+
+    await navigator.share({ files: [pdfFile] });
+    return true;
+  } catch (error) {
+    if (error && error.name !== 'AbortError') {
+      console.warn('PDF file share failed:', error);
+    }
+
+    return false;
+  }
 }
 
 async function downloadBookingPdf(booking) {
@@ -786,8 +825,11 @@ async function downloadBookingPdf(booking) {
   const pdfBlob = createPdfBlobFromJpeg(jpegBytes, canvas.width, canvas.height);
   const bookingDate = sanitizeFileName(getBookingDate(booking));
   const guestName = sanitizeFileName(booking.guestName);
+  const fileName = `pronto-booking-${bookingDate}-${guestName}.pdf`;
 
-  downloadBlob(pdfBlob, `pronto-booking-${bookingDate}-${guestName}.pdf`);
+  if (!(await sharePdfFileWithoutLink(pdfBlob, fileName))) {
+    downloadBlob(pdfBlob, fileName);
+  }
 }
 
 function isActiveStatus(status) {

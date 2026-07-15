@@ -9,6 +9,15 @@ async function run() {
   assert.strictEqual(response.status, 200);
   assert.ok(html.includes('lang="ar"'));
   assert.ok(html.includes('dir="rtl"'));
+  assert.ok(html.includes('js/app.js?v=pdf-share-1'));
+
+  const appJsResponse = await fetch(`${BASE_URL}/js/app.js?v=pdf-share-1`);
+  const appJs = await appJsResponse.text();
+
+  assert.strictEqual(appJsResponse.status, 200);
+  assert.ok(appJs.includes('sharePdfFileWithoutLink'));
+  assert.ok(appJs.includes('navigator.share({ files: [pdfFile] })'));
+  assert.ok(appJs.includes('/Info 6 0 R'));
   assert.ok(html.includes('تسجيل الدخول'));
   assert.ok(html.includes('إدارة الحساب'));
   assert.ok(html.includes('حجز صباحي'));
@@ -69,6 +78,7 @@ async function run() {
         arabicHtml: true,
         responsiveCss: true,
         newBookingFields: true,
+        pdfShareWithoutPageLink: true,
         publicAvailabilityPage: true,
         publicBackgroundAnimation: true,
       },
