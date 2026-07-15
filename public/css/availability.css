@@ -324,10 +324,23 @@ h2 {
 
 .day-slots {
   display: grid;
-  gap: 4px;
+  gap: 6px;
   color: var(--muted);
   font-size: 0.84rem;
   line-height: 1.4;
+}
+
+.day-slots span {
+  display: grid;
+  gap: 2px;
+}
+
+.day-slots small,
+.slot-copy small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .selected-day-status {
@@ -351,6 +364,11 @@ h2 {
 
 .slot-status strong {
   color: var(--text);
+}
+
+.slot-copy {
+  display: grid;
+  gap: 4px;
 }
 
 .slot-pill {

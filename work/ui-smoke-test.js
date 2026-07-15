@@ -22,6 +22,7 @@ async function run() {
   assert.strictEqual(availabilityResponse.status, 200);
   assert.ok(availabilityHtml.includes('تقويم توفر شاليه برونتو'));
   assert.ok(availabilityHtml.includes('availabilityGrid'));
+  assert.ok(availabilityHtml.includes('public-availability-2'));
   assert.ok(!availabilityHtml.includes('loginForm'));
 
   const cssResponse = await fetch(`${BASE_URL}/css/styles.css`);
@@ -39,6 +40,14 @@ async function run() {
   assert.strictEqual(availabilityCssResponse.status, 200);
   assert.ok(availabilityCss.includes('.availability-grid'));
   assert.ok(availabilityCss.includes('.slot-pill'));
+  assert.ok(availabilityCss.includes('.slot-copy'));
+
+  const availabilityJsResponse = await fetch(`${BASE_URL}/js/availability.js`);
+  const availabilityJs = await availabilityJsResponse.text();
+
+  assert.strictEqual(availabilityJsResponse.status, 200);
+  assert.ok(availabilityJs.includes('10:00 صباحاً'));
+  assert.ok(availabilityJs.includes('8:00 مساءً'));
 
   console.log(
     JSON.stringify(

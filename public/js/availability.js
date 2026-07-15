@@ -1,6 +1,16 @@
 const ARABIC_LOCALE = 'ar-SA-u-ca-gregory';
 const PUBLIC_AVAILABILITY_COLLECTION = 'publicAvailability';
 const bookingPeriodOrder = ['morning', 'evening'];
+const bookingPeriodTimes = {
+  morning: {
+    from: '10:00 صباحاً',
+    to: '8:00 مساءً',
+  },
+  evening: {
+    from: '10:00 مساءً',
+    to: '8:00 صباحاً',
+  },
+};
 const weekdayLabels = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
 
 const firebaseConfig = {
@@ -166,6 +176,11 @@ function getPeriodLabel(period) {
   return period === 'evening' ? 'الفترة المسائية' : 'الفترة الصباحية';
 }
 
+function getPeriodTimeRange(period) {
+  const times = bookingPeriodTimes[period] || bookingPeriodTimes.morning;
+  return `${times.from} - ${times.to}`;
+}
+
 function renderLoadingCalendar() {
   const cells = weekdayLabels.map((weekday) => `<div class="calendar-weekday">${weekday}</div>`);
 
@@ -213,7 +228,15 @@ function renderCalendar() {
     const dayClasses = ['calendar-day', status.className];
     const bookedPeriods = getBookedPeriods(dateString);
     const slotSummary = bookingPeriodOrder
-      .map((period) => `${getPeriodLabel(period)}: ${bookedPeriods.has(period) ? 'محجوز' : 'متاح'}`)
+      .map(
+        (period) => `
+          <span>
+            ${getPeriodLabel(period)}
+            <small>${getPeriodTimeRange(period)}</small>
+            ${bookedPeriods.has(period) ? 'محجوز' : 'متاح'}
+          </span>
+        `
+      )
       .join('<br />');
 
     if (dateString === todayString) {
@@ -251,7 +274,10 @@ function renderSelectedDay() {
 
       return `
         <div class="slot-status">
-          <strong>${getPeriodLabel(period)}</strong>
+          <span class="slot-copy">
+            <strong>${getPeriodLabel(period)}</strong>
+            <small>${getPeriodTimeRange(period)}</small>
+          </span>
           <span class="slot-pill ${isBooked ? 'booked' : 'available'}">
             ${isBooked ? 'محجوز' : 'متاح'}
           </span>
