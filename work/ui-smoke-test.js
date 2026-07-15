@@ -22,7 +22,7 @@ async function run() {
   assert.strictEqual(availabilityResponse.status, 200);
   assert.ok(availabilityHtml.includes('تقويم توفر شاليه برونتو'));
   assert.ok(availabilityHtml.includes('availabilityGrid'));
-  assert.ok(availabilityHtml.includes('public-availability-5'));
+  assert.ok(availabilityHtml.includes('public-availability-6'));
   assert.ok(availabilityHtml.includes('backgroundStage'));
   assert.ok(availabilityHtml.includes('gsap.min.js'));
   assert.ok(!availabilityHtml.includes('loginForm'));
@@ -42,7 +42,7 @@ async function run() {
   assert.strictEqual(availabilityCssResponse.status, 200);
   assert.ok(availabilityCss.includes('.availability-grid'));
   assert.ok(availabilityCss.includes('.background-slide'));
-  assert.ok(availabilityCss.includes('min-height: 68px'));
+  assert.ok(availabilityCss.includes('min-height: 75px'));
   assert.ok(availabilityCss.includes('width: min(1540px, calc(100% - 28px))'));
   assert.ok(availabilityCss.includes('.slot-pill'));
   assert.ok(availabilityCss.includes('.slot-copy'));

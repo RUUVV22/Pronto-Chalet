@@ -293,7 +293,7 @@ h2 {
   align-content: start;
   align-items: start;
   gap: 4px 6px;
-  min-height: 68px;
+  min-height: 75px;
   width: 100%;
   border: 1px solid rgba(111, 95, 82, 0.14);
   padding: 7px;
@@ -333,7 +333,7 @@ h2 {
 }
 
 .calendar-day.empty {
-  min-height: 68px;
+  min-height: 75px;
   border: 1px dashed rgba(111, 95, 82, 0.12);
   background: transparent;
   pointer-events: none;
@@ -568,7 +568,7 @@ h2 {
 
   .calendar-day,
   .calendar-day.empty {
-    min-height: 58px;
+    min-height: 64px;
     padding: 6px;
   }
 
