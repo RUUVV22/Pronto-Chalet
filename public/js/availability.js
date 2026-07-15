@@ -13,6 +13,36 @@ const bookingPeriodTimes = {
 };
 const weekdayLabels = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
 
+const backgroundImages = [
+  'assets/chalet-backgrounds/chalet-bg-01.jpg',
+  'assets/chalet-backgrounds/chalet-bg-02.jpg',
+  'assets/chalet-backgrounds/chalet-bg-03.jpg',
+  'assets/chalet-backgrounds/chalet-bg-04.jpg',
+  'assets/chalet-backgrounds/chalet-bg-05.jpg',
+  'assets/chalet-backgrounds/chalet-bg-06.jpg',
+  'assets/chalet-backgrounds/chalet-bg-07.jpg',
+  'assets/chalet-backgrounds/chalet-bg-08.jpg',
+  'assets/chalet-backgrounds/chalet-bg-09.jpg',
+  'assets/chalet-backgrounds/chalet-bg-10.jpg',
+  'assets/chalet-backgrounds/chalet-bg-11.jpg',
+  'assets/chalet-backgrounds/chalet-bg-12.jpg',
+  'assets/chalet-backgrounds/chalet-bg-13.jpg',
+  'assets/chalet-backgrounds/chalet-bg-14.jpg',
+  'assets/chalet-backgrounds/chalet-bg-15.jpg',
+  'assets/chalet-backgrounds/chalet-bg-16.jpg',
+  'assets/chalet-backgrounds/chalet-bg-17.jpeg',
+  'assets/chalet-backgrounds/chalet-bg-18.jpeg',
+  'assets/chalet-backgrounds/chalet-bg-19.jpeg',
+  'assets/chalet-backgrounds/chalet-bg-20.jpeg',
+  'assets/chalet-backgrounds/chalet-bg-21.jpeg',
+  'assets/chalet-backgrounds/chalet-bg-22.jpeg',
+  'assets/chalet-backgrounds/chalet-bg-23.jpeg',
+  'assets/chalet-backgrounds/chalet-bg-24.jpeg',
+  'assets/chalet-backgrounds/chalet-bg-25.jpeg',
+  'assets/chalet-backgrounds/chalet-bg-26.jpeg',
+];
+const backgroundSlideInterval = 6500;
+
 const firebaseConfig = {
   apiKey: 'AIzaSyDjmBwQn2i5S94g7lB5guDAfH9Wn8AhDlo',
   authDomain: 'prontochalet-f75b6.firebaseapp.com',
@@ -26,6 +56,7 @@ const firebaseConfig = {
 const elements = {
   availabilityGrid: document.getElementById('availabilityGrid'),
   availabilityMessage: document.getElementById('availabilityMessage'),
+  backgroundStage: document.getElementById('backgroundStage'),
   calendarTitle: document.getElementById('calendarTitle'),
   nextMonthButton: document.getElementById('nextMonthButton'),
   prevMonthButton: document.getElementById('prevMonthButton'),
@@ -39,6 +70,142 @@ const state = {
   selectedDate: '',
   slotsByDate: new Map(),
 };
+
+function prefersReducedMotion() {
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function getBackgroundMotion() {
+  return {
+    scale: 1.08 + Math.random() * 0.04,
+    xPercent: Math.random() * 4 - 2,
+    yPercent: Math.random() * 4 - 2,
+  };
+}
+
+function buildBackgroundSlide(imagePath, index) {
+  const slide = document.createElement('div');
+  slide.className = 'background-slide';
+  slide.style.backgroundImage = `url("${imagePath}")`;
+  slide.style.backgroundPosition = index % 2 === 0 ? 'center' : 'center top';
+
+  return slide;
+}
+
+function startCssBackgroundRotation(slides) {
+  let activeIndex = 0;
+
+  slides[activeIndex].classList.add('active');
+
+  if (prefersReducedMotion() || slides.length < 2) {
+    return;
+  }
+
+  window.setInterval(() => {
+    const nextIndex = (activeIndex + 1) % slides.length;
+
+    slides[activeIndex].classList.remove('active');
+    slides[nextIndex].classList.add('active');
+    activeIndex = nextIndex;
+  }, backgroundSlideInterval);
+}
+
+function startGsapBackgroundRotation(slides) {
+  const gsap = window.gsap;
+  let activeIndex = 0;
+
+  if (!gsap || prefersReducedMotion() || slides.length < 2) {
+    startCssBackgroundRotation(slides);
+    return;
+  }
+
+  gsap.set(slides, {
+    autoAlpha: 0,
+    filter: 'blur(14px)',
+    scale: 1.08,
+    xPercent: 0,
+    yPercent: 0,
+  });
+  gsap.set(slides[activeIndex], {
+    autoAlpha: 1,
+    filter: 'blur(0px)',
+    scale: 1.06,
+  });
+  slides[activeIndex].classList.add('active');
+
+  gsap.to(slides[activeIndex], {
+    ...getBackgroundMotion(),
+    duration: backgroundSlideInterval / 1000 + 1,
+    ease: 'sine.inOut',
+  });
+
+  window.setInterval(() => {
+    const currentSlide = slides[activeIndex];
+    const nextIndex = (activeIndex + 1) % slides.length;
+    const nextSlide = slides[nextIndex];
+    const nextMotion = getBackgroundMotion();
+
+    slides.forEach((slide) => slide.classList.remove('active'));
+    nextSlide.classList.add('active');
+    gsap.killTweensOf([currentSlide, nextSlide]);
+    gsap.set(nextSlide, {
+      autoAlpha: 0,
+      filter: 'blur(16px)',
+      scale: 1.13,
+      xPercent: -nextMotion.xPercent,
+      yPercent: -nextMotion.yPercent,
+    });
+
+    gsap
+      .timeline()
+      .to(
+        currentSlide,
+        {
+          autoAlpha: 0,
+          filter: 'blur(12px)',
+          scale: 1.02,
+          duration: 1.8,
+          ease: 'power2.inOut',
+        },
+        0
+      )
+      .to(
+        nextSlide,
+        {
+          autoAlpha: 1,
+          filter: 'blur(0px)',
+          scale: 1.06,
+          duration: 1.8,
+          ease: 'power2.inOut',
+        },
+        0
+      )
+      .to(
+        nextSlide,
+        {
+          ...nextMotion,
+          duration: backgroundSlideInterval / 1000 + 1.2,
+          ease: 'sine.inOut',
+        },
+        0
+      );
+
+    activeIndex = nextIndex;
+  }, backgroundSlideInterval);
+}
+
+function initializeBackgroundSlideshow() {
+  if (!elements.backgroundStage || backgroundImages.length === 0) {
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  const slides = backgroundImages.map((imagePath, index) => buildBackgroundSlide(imagePath, index));
+
+  slides.forEach((slide) => fragment.appendChild(slide));
+  elements.backgroundStage.appendChild(fragment);
+  startGsapBackgroundRotation(slides);
+}
 
 function padNumber(value) {
   return String(value).padStart(2, '0');
@@ -380,5 +547,6 @@ function bindEvents() {
   });
 }
 
+initializeBackgroundSlideshow();
 bindEvents();
 loadAvailability();

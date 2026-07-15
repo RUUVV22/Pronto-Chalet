@@ -22,7 +22,9 @@ async function run() {
   assert.strictEqual(availabilityResponse.status, 200);
   assert.ok(availabilityHtml.includes('تقويم توفر شاليه برونتو'));
   assert.ok(availabilityHtml.includes('availabilityGrid'));
-  assert.ok(availabilityHtml.includes('public-availability-2'));
+  assert.ok(availabilityHtml.includes('public-availability-3'));
+  assert.ok(availabilityHtml.includes('backgroundStage'));
+  assert.ok(availabilityHtml.includes('gsap.min.js'));
   assert.ok(!availabilityHtml.includes('loginForm'));
 
   const cssResponse = await fetch(`${BASE_URL}/css/styles.css`);
@@ -39,6 +41,7 @@ async function run() {
 
   assert.strictEqual(availabilityCssResponse.status, 200);
   assert.ok(availabilityCss.includes('.availability-grid'));
+  assert.ok(availabilityCss.includes('.background-slide'));
   assert.ok(availabilityCss.includes('.slot-pill'));
   assert.ok(availabilityCss.includes('.slot-copy'));
 
@@ -46,8 +49,14 @@ async function run() {
   const availabilityJs = await availabilityJsResponse.text();
 
   assert.strictEqual(availabilityJsResponse.status, 200);
+  assert.ok(availabilityJs.includes('backgroundImages'));
+  assert.ok(availabilityJs.includes('chalet-bg-01.jpg'));
   assert.ok(availabilityJs.includes('10:00 صباحاً'));
   assert.ok(availabilityJs.includes('8:00 مساءً'));
+
+  const backgroundResponse = await fetch(`${BASE_URL}/assets/chalet-backgrounds/chalet-bg-01.jpg`);
+
+  assert.strictEqual(backgroundResponse.status, 200);
 
   console.log(
     JSON.stringify(
@@ -56,6 +65,7 @@ async function run() {
         responsiveCss: true,
         newBookingFields: true,
         publicAvailabilityPage: true,
+        publicBackgroundAnimation: true,
       },
       null,
       2
