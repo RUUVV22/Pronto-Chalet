@@ -444,11 +444,15 @@ function buildReceiptLines(booking) {
       text: `تسليم الشالية بالحالة نفسها من حيث النظافة، وإلا يتم خصم ${formatReceiptNumber(
         receiptCleaningDeduction
       )} دينارًا من مبلغ التأمين.`,
-      variant: 'bullet',
+      variant: 'highlightBullet',
     },
     {
       text: 'الالتزام بموعد الاستلام وموعد المغادرة.',
-      variant: 'bullet',
+      variant: 'highlightBullet',
+    },
+    {
+      text: 'في حال زيادة عدد الضيوف عن العدد المحدد بالحجز يتم خصم التأمين كامل.',
+      variant: 'highlightBullet',
     },
     {
       text: 'المحافظة على نظافة مياه المسبح وعدم رمي الطعام أو المخلفات داخل البركة.',
@@ -563,6 +567,15 @@ function getReceiptTextStyle(variant, scale = 1) {
       color: '#382719',
       lineHeight: 36,
       marginBottom: 8,
+      align: 'center',
+      prefix: '• ',
+    },
+    highlightBullet: {
+      weight: 700,
+      size: 31,
+      color: '#322312',
+      lineHeight: 42,
+      marginBottom: 10,
       align: 'center',
       prefix: '• ',
     },
