@@ -27,6 +27,7 @@ const AUTH_BASE = '/api/auth';
 const STATIC_STORAGE_KEY = 'pronto-chalet-static-store-v1';
 const STATIC_SESSION_KEY = 'pronto-chalet-static-session-v1';
 const ARABIC_LOCALE = 'ar-SA-u-ca-gregory';
+const ARABIC_DIGIT_LOCALE = 'ar-SA-u-nu-arab';
 const PHONE_NUMBER_MAX_LENGTH = 10;
 const CALENDAR_LOADING_CELLS = 14;
 const TABLE_LOADING_ROWS = 4;
@@ -356,6 +357,13 @@ function formatReceiptNumber(value) {
   }).format(Number(value) || 0);
 }
 
+function formatReceiptDateNumber(value) {
+  return new Intl.NumberFormat(ARABIC_DIGIT_LOCALE, {
+    maximumFractionDigits: 0,
+    useGrouping: false,
+  }).format(Number(value) || 0);
+}
+
 function formatReceiptShortDate(dateString) {
   const date = parseDateInput(dateString);
 
@@ -363,7 +371,7 @@ function formatReceiptShortDate(dateString) {
     return 'تاريخ غير صالح';
   }
 
-  return `${formatReceiptNumber(date.getDate())}/${formatReceiptNumber(date.getMonth() + 1)}`;
+  return `${formatReceiptDateNumber(date.getMonth() + 1)}/${formatReceiptDateNumber(date.getDate())}`;
 }
 
 function formatReceiptWeekday(dateString) {

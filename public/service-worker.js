@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pronto-chalet-pdf-share-v1';
+const CACHE_NAME = 'pronto-chalet-pdf-date-v2';
 
 const APP_SHELL = [
   './',
@@ -6,7 +6,7 @@ const APP_SHELL = [
   'availability.html',
   'css/styles.css?v=loading-logo-1',
   'css/availability.css?v=public-availability-6',
-  'js/app.js?v=pdf-share-1',
+  'js/app.js?v=pdf-date-2',
   'js/availability.js?v=public-availability-6',
   'assets/NoBackLogo.png',
   'assets/chalet-backgrounds/chalet-bg-01.jpg',
